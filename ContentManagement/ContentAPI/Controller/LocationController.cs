@@ -1,21 +1,22 @@
-﻿using ContentAPI.Domain;
+﻿using ContentAPI.Controller.Interfaces;
+using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentAPI.Controller
 {
-    [Route("api/Content")]
+    [Route("api/Content/Locations")]
     [ApiController]
-    public class ContentController : ControllerBase, IContentController
+    public class LocationController : ControllerBase, ILocationController
     {
         private readonly ILocationService _locationService;
-        public ContentController(ILocationService locationService)
+        public LocationController(ILocationService locationService)
         {
             _locationService = locationService;
         }
 
-        [HttpPost("Locations/Create")]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO)
         {
             if (locationDTO == null)
@@ -28,12 +29,33 @@ namespace ContentAPI.Controller
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        [HttpGet("Locations/GetByKey/{partitionKey}/{rowKey}")]
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateLocation([FromBody] Location location)
+        {
+            if (location == null)
+            {
+                return BadRequest("Invalid data in the request body");
+            }
+
+            Location updatedLocation = await _locationService.UpdateLocationAsync(location);
+
+            return Ok(updatedLocation);
+        }
+
+        [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey)
         {
             var location = await _locationService.GetLocationByKeyAsync(partitionKey, rowKey);
 
             return location == null ? NotFound() : Ok(location);
+        }
+
+        [HttpDelete("Delete/{partitionKey}/{rowKey}")]
+        public async Task<IActionResult> DeleteLocation(string partitionKey, string rowKey)
+        {
+            await _locationService.DeleteLocationAsync(partitionKey, rowKey);
+
+            return NoContent();
         }
     }
 }

@@ -19,12 +19,10 @@ namespace ContentAPI.DAL
         {
             await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
         }
-
         public async Task<T> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _tableClient.GetEntityAsync<T>(partitionKey, rowKey);
         }
-
         public async Task<T> UpsertLocationAsync(T location)
         {
             await _tableClient.UpsertEntityAsync(location);

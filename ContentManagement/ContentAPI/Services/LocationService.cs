@@ -28,10 +28,17 @@ namespace ContentAPI.Services
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
-
+        public async Task<Location> UpdateLocationAsync(Location updatedLocation)
+        {
+            return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        }
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);
+        }
+        public async Task DeleteLocationAsync(string partitionKey, string rowKey)
+        {
+            await _locationRepo.DeleteLocationAsync(partitionKey, rowKey);
         }
     }
 }
