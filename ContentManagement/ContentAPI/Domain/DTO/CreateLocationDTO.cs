@@ -1,8 +1,6 @@
-﻿using Azure.Data.Tables;
-
-namespace ContentAPI.Domain
+﻿namespace ContentAPI.Domain.DTO
 {
-    public class Location : ContentBase
+    public class CreateLocationDTO
     {
         public string? Name { get; set; }
         public string? Description { get; set; }

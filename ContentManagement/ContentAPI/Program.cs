@@ -1,3 +1,8 @@
+using ContentAPI.DAL;
+using ContentAPI.DAL.Interfaces;
+using ContentAPI.Domain;
+using ContentAPI.Services;
+using ContentAPI.Services.Interfaces;
 using Microsoft.Extensions.Azure;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +19,12 @@ builder.Services.AddAzureClients(clientBuilder =>
 });
 
 // Add Services
+builder.Services.AddScoped<ILocationService, LocationService>();
+
 
 // Add Repositories
+builder.Services.AddScoped<ILocationRepo<Location>, LocationRepo<Location>>();
+
 
 var app = builder.Build();
 

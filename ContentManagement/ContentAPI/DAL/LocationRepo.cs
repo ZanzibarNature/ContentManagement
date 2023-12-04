@@ -1,6 +1,34 @@
-﻿namespace ContentAPI.DAL
+﻿using Azure.Data.Tables;
+using ContentAPI.DAL.Interfaces;
+using ContentAPI.Domain;
+
+namespace ContentAPI.DAL
 {
-    public class LocationRepo
+    public class LocationRepo<T> : ILocationRepo<T> where T : class, ITableEntity, new()
     {
+        private readonly TableClient _tableClient;
+
+        public LocationRepo()
+        {
+            TableServiceClient serviceClient = new TableServiceClient("UseDevelopmentStorage=true");
+            serviceClient.CreateTableIfNotExists("locations");
+            _tableClient = serviceClient.GetTableClient("locations");
+        }
+
+        public async Task DeleteLocationAsync(string partitionKey, string rowKey)
+        {
+            await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
+        }
+
+        public async Task<T> GetLocationByKeyAsync(string partitionKey, string rowKey)
+        {
+            return await _tableClient.GetEntityAsync<T>(partitionKey, rowKey);
+        }
+
+        public async Task<T> UpsertLocationAsync(T location)
+        {
+            await _tableClient.UpsertEntityAsync(location);
+            return location;
+        }
     }
 }
