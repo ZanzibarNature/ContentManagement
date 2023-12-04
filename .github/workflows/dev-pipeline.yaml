@@ -1,0 +1,65 @@
+name: cm-dev-pipeline
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./ContentManagement
+
+      - name: Build
+        run: dotnet build --no-restore
+        working-directory: ./ContentManagement
+
+      # - name: Test
+      #   run: dotnet test --no-build --verbosity normal
+      #   working-directory: ./ContentManagement
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          buildkit: true
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: zanzibarinh/usermanagement:latest
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+
+  #   needs: docker
+
+  #   steps:
+  #     - name: Deploy to OpenShift
+  #       run: |
+  #         # Your OpenShift deployment commands go here
