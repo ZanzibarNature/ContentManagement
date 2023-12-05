@@ -1,5 +1,4 @@
-﻿using Azure.Data.Tables;
-
+﻿
 namespace ContentAPI.Domain
 {
     public class Location : ContentBase

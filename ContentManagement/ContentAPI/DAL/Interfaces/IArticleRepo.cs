@@ -1,6 +1,6 @@
 ﻿namespace ContentAPI.DAL.Interfaces
 {
-    public interface IPostRepo
+    public interface IArticleRepo
     {
     }
 }

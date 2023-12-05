@@ -1,6 +1,6 @@
 ﻿namespace ContentAPI.DAL
 {
-    public class PostRepo
+    public class ArticleRepo
     {
     }
 }

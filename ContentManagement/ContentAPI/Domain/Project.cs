@@ -1,6 +1,8 @@
 ﻿namespace ContentAPI.Domain
 {
-    public class Project
+    public class Project : ContentBase
     {
+
+
     }
 }

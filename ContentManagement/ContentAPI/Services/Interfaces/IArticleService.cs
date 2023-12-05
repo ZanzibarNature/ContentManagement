@@ -1,6 +1,6 @@
 ﻿namespace ContentAPI.Services.Interfaces
 {
-    public interface IPostService
+    public interface IArticleService
     {
     }
 }

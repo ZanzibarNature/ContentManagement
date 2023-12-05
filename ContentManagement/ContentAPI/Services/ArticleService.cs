@@ -1,6 +1,6 @@
 ﻿namespace ContentAPI.Services
 {
-    public class PostService
+    public class ArticleService
     {
     }
 }
