@@ -52,7 +52,7 @@ jobs:
           buildkit: true
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: zanzibarinh/usermanagement:latest
+          tags: zanzibarinh/contentmanagement:latest
 
   # deploy:
   #   runs-on: ubuntu-latest
