@@ -20,10 +20,11 @@ builder.Services.AddAzureClients(clientBuilder =>
 
 // Add Services
 builder.Services.AddScoped<ILocationService, LocationService>();
-
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 // Add Repositories
 builder.Services.AddScoped<ILocationRepo<Location>, LocationRepo<Location>>();
+builder.Services.AddScoped<IBlobStorageRepo, BlobStorageRepo>();
 
 
 var app = builder.Build();

@@ -11,33 +11,35 @@ namespace ContentAPI.Controller
     public class LocationController : ControllerBase, ILocationController
     {
         private readonly ILocationService _locationService;
-        public LocationController(ILocationService locationService)
+        private readonly IBlobStorageService _blobService;
+        public LocationController(ILocationService locationService, IBlobStorageService blobService)
         {
             _locationService = locationService;
+            _blobService = blobService;
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO)
+        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO, [FromForm] IFormFile? bannerImage = null, [FromForm] IFormFileCollection? additionalImages = null)
         {
             if (locationDTO == null)
             {
                 return BadRequest("Invalid data in the request body");
             }
 
-            Location newLocation = await _locationService.CreateLocation(locationDTO);
+            Location newLocation = await _locationService.CreateLocation(locationDTO, bannerImage, additionalImages);
 
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateLocation([FromBody] Location location)
+        public async Task<IActionResult> UpdateLocation([FromBody] Location location, [FromForm] IFormFile? bannerImage = null, [FromForm] IFormFileCollection? additionalImages = null)
         {
             if (location == null)
             {
                 return BadRequest("Invalid data in the request body");
             }
 
-            Location updatedLocation = await _locationService.UpdateLocationAsync(location);
+            Location updatedLocation = await _locationService.UpdateLocationAsync(location, bannerImage, additionalImages);
 
             return Ok(updatedLocation);
         }

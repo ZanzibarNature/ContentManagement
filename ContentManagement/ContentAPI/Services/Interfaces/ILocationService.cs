@@ -5,8 +5,8 @@ namespace ContentAPI.Services.Interfaces
 {
     public interface ILocationService
     {
-        public Task<Location> CreateLocation(CreateLocationDTO locationDTO);
-        public Task<Location> UpdateLocationAsync(Location updatedLocation);
+        public Task<Location> CreateLocation(CreateLocationDTO locationDTO, IFormFile? bannerImage, IFormFileCollection? additionalImageURLs);
+        public Task<Location> UpdateLocationAsync(Location updatedLocation, IFormFile? bannerImage, IFormFileCollection? additionalImages);
         public Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey);
         public Task DeleteLocationAsync(string partitionKey, string rowKey);
     }
