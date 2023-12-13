@@ -18,7 +18,7 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public BlobClient? StoreImage(IFormFile image)
+        public BlobClient? StoreImageAsJpg(IFormFile image)
         {
             if (image == null)
             {

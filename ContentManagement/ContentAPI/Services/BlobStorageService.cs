@@ -13,9 +13,9 @@ namespace ContentAPI.Services
             _blobStorageRepo = blobStorageRepo;
         }
 
-        public BlobClient StoreImage(IFormFile image)
+        public BlobClient? StoreImage(IFormFile image)
         {
-            return _blobStorageRepo.StoreImage(image);
+            return _blobStorageRepo.StoreImageAsJpg(image);
         }
 
         public string GetURL(BlobClient blobClient)

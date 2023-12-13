@@ -1,6 +1,7 @@
 ﻿using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
+using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 
 namespace ContentAPI.Services
@@ -20,26 +21,31 @@ namespace ContentAPI.Services
         /// If the given image is null, the returned URL becomes an empty string.
         /// If there a no addtional images, the returned collection is an empty list.
         /// </summary>
-        public async Task<Location> CreateLocation(CreateLocationDTO locationDTO, IFormFile? bannerImage, IFormFileCollection? additionalImages)
+        public async Task<Location> CreateLocation(LocationRequestModel model)
         {
             Location newLoc = new Location
             {
                 PartitionKey = "Location",
                 RowKey = Guid.NewGuid().ToString(),
-                Name = locationDTO.Name,
-                Description = locationDTO.Description,
-                Latitude = locationDTO.Latitude,
-                Longitude = locationDTO.Longitude,
-                BannerImageURL = _blobService.GetURL(_blobService.StoreImage(bannerImage)),
+                Name = model.LocationDTO.Name,
+                Description = model.LocationDTO.Description,
+                Latitude = model.LocationDTO.Latitude,
+                Longitude = model.LocationDTO.Longitude,
+                BannerImageURL = _blobService.GetURL(_blobService.StoreImage(model.BannerImage)),
                 AdditionalImageURLs = new List<string>()
             };
 
-            if (additionalImages != null && additionalImages.Any())
+            //if (additionalImages != null && additionalImages.Any())
+            //{
+            //    foreach (var image in additionalImages)
+            //    {
+            //        newLoc.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(image)));
+            //    }
+            //}
+
+            if (model.AdditionalImage !=  null)
             {
-                foreach (var image in additionalImages)
-                {
-                    newLoc.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(image)));
-                }
+                newLoc.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(model.AdditionalImage)));
             }
             
             await _locationRepo.UpsertLocationAsync(newLoc);

@@ -1,6 +1,7 @@
 ﻿using ContentAPI.Controller.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
+using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,14 +20,14 @@ namespace ContentAPI.Controller
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO, [FromForm] IFormFile? bannerImage = null, [FromForm] IFormFileCollection? additionalImages = null)
+        public async Task<IActionResult> CreateLocation([FromForm] LocationRequestModel model)
         {
-            if (locationDTO == null)
+            if (model.LocationDTO == null)
             {
-                return BadRequest("Invalid data in the request body");
+                return BadRequest("LocationDTO object is null or invalid");
             }
 
-            Location newLocation = await _locationService.CreateLocation(locationDTO, bannerImage, additionalImages);
+            Location newLocation = await _locationService.CreateLocation(model);
 
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
