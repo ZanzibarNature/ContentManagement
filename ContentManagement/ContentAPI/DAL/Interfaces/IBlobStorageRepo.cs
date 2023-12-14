@@ -4,7 +4,6 @@ namespace ContentAPI.DAL.Interfaces
 {
     public interface IBlobStorageRepo
     {
-        BlobClient? StoreImageAsJpg(IFormFile image);
-        string GetURL(BlobClient blobClient);
+        string? AddJpgImage(IFormFile image);
     }
 }

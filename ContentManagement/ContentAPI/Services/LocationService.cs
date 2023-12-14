@@ -16,12 +16,7 @@ namespace ContentAPI.Services
             _blobService = blobService;
         }
 
-        /// <summary>
-        /// This method creates a new Location object. If given, it also adds the banner image url and/or additional image url collection.
-        /// If the given image is null, the returned URL becomes an empty string.
-        /// If there a no addtional images, the returned collection is an empty list.
-        /// </summary>
-        public async Task<Location> CreateLocation(LocationRequestModel model)
+        public async Task<Location> CreateLocation(CreateLocationRequestModel model)
         {
             Location newLoc = new Location
             {
@@ -31,31 +26,29 @@ namespace ContentAPI.Services
                 Description = model.LocationDTO.Description,
                 Latitude = model.LocationDTO.Latitude,
                 Longitude = model.LocationDTO.Longitude,
-                BannerImageURL = _blobService.GetURL(_blobService.StoreImage(model.BannerImage)),
-                AdditionalImageURL = _blobService.GetURL(_blobService.StoreImage(model.AdditionalImage))
+                BannerImageURL = _blobService.AddJpgImage(model.BannerImage),
+                AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage)
             };
             
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
 
-        /// <summary>
-        /// This method updates the given Location object. If given, it also updates the banner image url and/or additional image url collection.
-        /// If the given image is null, the returned URL becomes an empty string.
-        /// </summary>
-        //public async Task<Location> UpdateLocationAsync(Location updatedLocation, IFormFile? bannerImage, IFormFileCollection? additionalImage)
-        //{
-        //    if (bannerImage != null)
-        //    {
-        //        updatedLocation.BannerImageURL = _blobService.GetURL(_blobService.StoreImage(bannerImage));
-        //    }
-        //    if (additionalImages != null)
-        //    {
-        //        updatedLocation.BannerImageURL = _blobService.GetURL(_blobService.StoreImage(additionalImage));
-        //    }
+        public async Task<Location> UpdateLocationAsync(UpdateLocationRequestModel model)
+        {
+            Location updatedLocation = model.UpdatedLocation;
 
-        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        //}
+            if (updatedLocation.BannerImageURL != null)
+            {
+                updatedLocation.BannerImageURL = _blobService.AddJpgImage(model.BannerImage);
+            }
+            if (updatedLocation.AdditionalImageURL != null)
+            {
+                updatedLocation.AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage);
+            }
+
+            return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        }
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);

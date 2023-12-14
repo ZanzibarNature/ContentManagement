@@ -4,7 +4,7 @@ using BrunoZell.ModelBinding;
 
 namespace ContentAPI.Domain.RequestModel
 {
-    public class LocationRequestModel
+    public class CreateLocationRequestModel
     {
         [ModelBinder(BinderType = typeof(JsonModelBinder))]
         public CreateLocationDTO? LocationDTO { get; set; }

@@ -20,7 +20,7 @@ namespace ContentAPI.Controller
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromForm] LocationRequestModel model)
+        public async Task<IActionResult> CreateLocation([FromForm] CreateLocationRequestModel model)
         {
             if (model.LocationDTO == null)
             {
@@ -32,18 +32,18 @@ namespace ContentAPI.Controller
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> UpdateLocation([FromBody] Location location, [FromForm] IFormFile? bannerImage = null, [FromForm] IFormFileCollection? additionalImages = null)
-        //{
-        //    if (location == null)
-        //    {
-        //        return BadRequest("Invalid data in the request body");
-        //    }
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateLocation([FromForm] UpdateLocationRequestModel model)
+        {
+            if (model.UpdatedLocation == null)
+            {
+                return BadRequest("Updated Location object is null or invalid");
+            }
 
-        //    Location updatedLocation = await _locationService.UpdateLocationAsync(location, bannerImage, additionalImages);
+            Location updatedLocation = await _locationService.UpdateLocationAsync(model);
 
-        //    return Ok(updatedLocation);
-        //}
+            return Ok(updatedLocation);
+        }
 
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey)

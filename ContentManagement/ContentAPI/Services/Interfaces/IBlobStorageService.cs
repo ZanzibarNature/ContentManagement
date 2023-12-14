@@ -4,7 +4,6 @@ namespace ContentAPI.Services.Interfaces
 {
     public interface IBlobStorageService
     {
-        BlobClient? StoreImage(IFormFile image);
-        string GetURL(BlobClient blobClient);
+        string AddJpgImage(IFormFile image);
     }
 }

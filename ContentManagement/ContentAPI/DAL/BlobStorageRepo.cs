@@ -18,7 +18,7 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public BlobClient? StoreImageAsJpg(IFormFile image)
+        public string? AddJpgImage(IFormFile image)
         {
             if (image == null)
             {
@@ -36,12 +36,7 @@ namespace ContentAPI.DAL
 
             blobClient.Upload(image.OpenReadStream(), options);
 
-            return blobClient;
-        }
-
-        public string GetURL(BlobClient blobClient)
-        {
-            return blobClient == null ? string.Empty : blobClient.Uri.ToString();
+            return blobClient.Uri.ToString();
         }
     }
 }
