@@ -32,21 +32,8 @@ namespace ContentAPI.Services
                 Latitude = model.LocationDTO.Latitude,
                 Longitude = model.LocationDTO.Longitude,
                 BannerImageURL = _blobService.GetURL(_blobService.StoreImage(model.BannerImage)),
-                AdditionalImageURLs = new List<string>()
+                AdditionalImageURL = _blobService.GetURL(_blobService.StoreImage(model.AdditionalImage))
             };
-
-            //if (additionalImages != null && additionalImages.Any())
-            //{
-            //    foreach (var image in additionalImages)
-            //    {
-            //        newLoc.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(image)));
-            //    }
-            //}
-
-            if (model.AdditionalImage !=  null)
-            {
-                newLoc.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(model.AdditionalImage)));
-            }
             
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
@@ -56,22 +43,19 @@ namespace ContentAPI.Services
         /// This method updates the given Location object. If given, it also updates the banner image url and/or additional image url collection.
         /// If the given image is null, the returned URL becomes an empty string.
         /// </summary>
-        public async Task<Location> UpdateLocationAsync(Location updatedLocation, IFormFile? bannerImage, IFormFileCollection? additionalImages)
-        {
-            if (bannerImage != null)
-            {
-                updatedLocation.BannerImageURL = _blobService.GetURL(_blobService.StoreImage(bannerImage));
-            }
-            if (additionalImages != null && additionalImages.Any())
-            {
-                foreach (var image in additionalImages)
-                {
-                    updatedLocation.AdditionalImageURLs.Add(_blobService.GetURL(_blobService.StoreImage(image)));
-                }
-            }
+        //public async Task<Location> UpdateLocationAsync(Location updatedLocation, IFormFile? bannerImage, IFormFileCollection? additionalImage)
+        //{
+        //    if (bannerImage != null)
+        //    {
+        //        updatedLocation.BannerImageURL = _blobService.GetURL(_blobService.StoreImage(bannerImage));
+        //    }
+        //    if (additionalImages != null)
+        //    {
+        //        updatedLocation.BannerImageURL = _blobService.GetURL(_blobService.StoreImage(additionalImage));
+        //    }
 
-            return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        }
+        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        //}
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);

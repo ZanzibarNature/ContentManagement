@@ -13,6 +13,6 @@ namespace ContentAPI.Domain
 
         // Custom Fields
         public string? BannerImageURL { get; set; }
-        public List<string>? AdditionalImageURLs { get; set; }
+        public string? AdditionalImageURL { get; set; }
     }
 }
