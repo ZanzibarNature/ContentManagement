@@ -1,9 +1,10 @@
-﻿using ContentAPI.Controller.Interfaces;
+﻿using Azure;
+using ContentAPI.Controller.Interfaces;
 using ContentAPI.Domain;
-using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace ContentAPI.Controller
 {
@@ -56,9 +57,9 @@ namespace ContentAPI.Controller
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> DeleteLocation(string partitionKey, string rowKey)
         {
-            await _locationService.DeleteLocationAsync(partitionKey, rowKey);
+            Response response = await _locationService.DeleteLocationAsync(partitionKey, rowKey);
 
-            return NoContent();
+            return response.IsError ? NotFound("Given keypair does not exist") : NoContent();
         }
     }
 }

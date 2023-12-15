@@ -1,6 +1,6 @@
-﻿using ContentAPI.DAL.Interfaces;
+﻿using Azure;
+using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
-using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 
@@ -53,9 +53,9 @@ namespace ContentAPI.Services
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);
         }
-        public async Task DeleteLocationAsync(string partitionKey, string rowKey)
+        public async Task<Response> DeleteLocationAsync(string partitionKey, string rowKey)
         {
-            await _locationRepo.DeleteLocationAsync(partitionKey, rowKey);
+            return await _locationRepo.DeleteLocationAsync(partitionKey, rowKey);
         }
     }
 }

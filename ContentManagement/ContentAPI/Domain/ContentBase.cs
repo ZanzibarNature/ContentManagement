@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
+using Azure.Core.Serialization;
 
 namespace ContentAPI.Domain
 {

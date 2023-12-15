@@ -3,6 +3,8 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Services;
 using ContentAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using Microsoft.Extensions.Azure;
 var builder = WebApplication.CreateBuilder(args);
 

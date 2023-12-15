@@ -1,6 +1,5 @@
-﻿using ContentAPI.Domain.DTO;
+﻿using BrunoZell.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
-using BrunoZell.ModelBinding;
 
 namespace ContentAPI.Domain.RequestModel
 {

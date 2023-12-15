@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
 
 namespace ContentAPI.DAL.Interfaces
 {
@@ -6,6 +7,6 @@ namespace ContentAPI.DAL.Interfaces
     {
         Task<T> GetLocationByKeyAsync(string partitionKey, string rowKey);
         Task<T> UpsertLocationAsync(T location);
-        Task DeleteLocationAsync(string partitionKey, string rowKey);
+        Task<Response> DeleteLocationAsync(string partitionKey, string rowKey);
     }
 }

@@ -1,6 +1,6 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
 using ContentAPI.DAL.Interfaces;
-using ContentAPI.Domain;
 
 namespace ContentAPI.DAL
 {
@@ -15,9 +15,9 @@ namespace ContentAPI.DAL
             _tableClient = serviceClient.GetTableClient("locations");
         }
 
-        public async Task DeleteLocationAsync(string partitionKey, string rowKey)
+        public async Task<Response> DeleteLocationAsync(string partitionKey, string rowKey)
         {
-            await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
+            return await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
         }
         public async Task<T> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
