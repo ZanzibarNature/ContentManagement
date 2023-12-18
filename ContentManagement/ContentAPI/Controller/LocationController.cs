@@ -1,6 +1,7 @@
 ﻿using Azure;
 using ContentAPI.Controller.Interfaces;
 using ContentAPI.Domain;
+using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,14 +22,14 @@ namespace ContentAPI.Controller
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromForm] CreateLocationRequestModel model)
+        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO)
         {
-            if (model.LocationDTO == null)
+            if (locationDTO == null)
             {
                 return BadRequest("LocationDTO object is null or invalid");
             }
 
-            Location newLocation = await _locationService.CreateLocation(model);
+            Location newLocation = await _locationService.CreateLocation(locationDTO);
 
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
