@@ -32,18 +32,18 @@ namespace ContentAPI.Controller
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> UpdateLocation([FromBody] Location location)
-        //{
-        //    if (model.UpdatedLocation == null)
-        //    {
-        //        return BadRequest("Updated Location object is null or invalid");
-        //    }
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateLocation([FromBody] UpdateLocationDTO updateLocationDTO)
+        {
+            if (updateLocationDTO == null)
+            {
+                return BadRequest("UpdateLocationDTO object is null or invalid");
+            }
 
-        //    Location updatedLocation = await _locationService.UpdateLocationAsync(model);
+            Location updatedLocation = await _locationService.UpdateLocationAsync(model);
 
-        //    return Ok(updatedLocation);
-        //}
+            return Ok(updatedLocation);
+        }
 
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey)

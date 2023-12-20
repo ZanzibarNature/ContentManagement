@@ -8,7 +8,7 @@ namespace ContentAPI.Controller.Interfaces
     {
         Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey);
         Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO);
-        //Task<IActionResult> UpdateLocation([FromBody] Location location);
+        Task<IActionResult> UpdateLocation([FromBody] UpdateLocationDTO updateLocationDTO);
         Task<IActionResult> DeleteLocation(string partitionKey, string rowKey);
     }
 }

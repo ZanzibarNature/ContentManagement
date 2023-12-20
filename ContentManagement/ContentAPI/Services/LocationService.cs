@@ -26,40 +26,44 @@ namespace ContentAPI.Services
                 Description = locationDTO.Description,
                 Latitude = locationDTO.Latitude,
                 Longitude = locationDTO.Longitude,
+                ImageURLs = new Dictionary<string, string>()
             };
 
-            // Add images
-            string imageName = "BannerImage";
-            if (locationDTO.Images.TryGetValue(imageName, out string retrievedValue))
+            // Add image urls
+            foreach (var image in locationDTO.Base64Images)
             {
-                newLoc.BannerImageURL = _blobService.AddJpgImage(retrievedValue);
-                locationDTO.Images.Remove(imageName);
+                newLoc.ImageURLs.Add(image.Key, _blobService.AddJpgImage(image.Value));
             }
 
-            foreach (var image in locationDTO.Images)
-            {
-                newLoc.AdditionalImageURLs += _blobService.AddJpgImage(image.Value) + ",";
-            }
-            
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
 
-        //public async Task<Location> UpdateLocationAsync(UpdateLocationRequestModel model)
-        //{
-        //    Location updatedLocation = model.UpdatedLocation;
+        public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO)
+        {
+            Location updatedLocation = new Location
+            {
+                PartitionKey = DTO.PartitionKey,
+                RowKey = DTO.RowKey,
+                ETag = DTO.ETag,
+                Timestamp = DTO.Timestamp,
+                Name = DTO.Name,
+                Description = DTO.Description,
+                Latitude = DTO.Latitude,
+                Longitude = DTO.Longitude,
+            };
 
-        //    if (updatedLocation.BannerImageURL != null)
-        //    {
-        //        updatedLocation.BannerImageURL = _blobService.AddJpgImage(model.BannerImage);
-        //    }
-        //    if (updatedLocation.AdditionalImageURL != null)
-        //    {
-        //        updatedLocation.AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage);
-        //    }
+            if (DTO.Base64Images.TryGetValue("BannerImage", out string bannerImage) && bannerImage != null)
+            {
+                updatedLocation.BannerImageURL = _blobService.AddJpgImage(bannerImage);
+            }
+            foreach (var image in DTO.Base64Images)
+            {
+                updatedLocation.AdditionalImageURLs +=
+            }
 
-        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        //}
+            return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        }
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);

@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using ContentAPI.DAL.Interfaces;
+﻿using ContentAPI.DAL.Interfaces;
 using ContentAPI.Services.Interfaces;
 
 namespace ContentAPI.Services
