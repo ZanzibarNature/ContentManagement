@@ -13,7 +13,7 @@ namespace ContentAPI.Services
             _blobStorageRepo = blobStorageRepo;
         }
 
-        public string AddJpgImage(IFormFile image)
+        public string AddJpgImage(string image)
         {
             return _blobStorageRepo.AddJpgImage(image);
         }

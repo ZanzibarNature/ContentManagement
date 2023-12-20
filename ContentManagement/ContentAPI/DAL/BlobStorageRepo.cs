@@ -18,9 +18,9 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public string? AddJpgImage(IFormFile image)
+        public string? AddJpgImage(string image)
         {
-            if (image == null)
+            if (string.IsNullOrEmpty(image))
             {
                 return null;
             }
@@ -34,7 +34,12 @@ namespace ContentAPI.DAL
                 HttpHeaders = new BlobHttpHeaders { ContentType = "image/jpeg" }
             };
 
-            blobClient.Upload(image.OpenReadStream(), options);
+            byte[] imageBytes = Convert.FromBase64String(image);
+
+            using (var stream = new MemoryStream(imageBytes))
+            {
+                blobClient.Upload(stream, options);
+            }
 
             return blobClient.Uri.ToString();
         }

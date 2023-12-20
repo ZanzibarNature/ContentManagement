@@ -1,7 +1,7 @@
 ﻿using Azure;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
-using ContentAPI.Domain.RequestModel;
+using ContentAPI.Domain.DTO;
 using ContentAPI.Services.Interfaces;
 
 namespace ContentAPI.Services
@@ -16,39 +16,50 @@ namespace ContentAPI.Services
             _blobService = blobService;
         }
 
-        public async Task<Location> CreateLocation(CreateLocationRequestModel model)
+        public async Task<Location> CreateLocation(CreateLocationDTO locationDTO)
         {
             Location newLoc = new Location
             {
                 PartitionKey = "Location",
                 RowKey = Guid.NewGuid().ToString(),
-                Name = model.LocationDTO.Name,
-                Description = model.LocationDTO.Description,
-                Latitude = model.LocationDTO.Latitude,
-                Longitude = model.LocationDTO.Longitude,
-                BannerImageURL = _blobService.AddJpgImage(model.BannerImage),
-                AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage)
+                Name = locationDTO.Name,
+                Description = locationDTO.Description,
+                Latitude = locationDTO.Latitude,
+                Longitude = locationDTO.Longitude,
             };
+
+            // Add images
+            string imageName = "BannerImage";
+            if (locationDTO.Images.TryGetValue(imageName, out string retrievedValue))
+            {
+                newLoc.BannerImageURL = _blobService.AddJpgImage(retrievedValue);
+                locationDTO.Images.Remove(imageName);
+            }
+
+            foreach (var image in locationDTO.Images)
+            {
+                newLoc.AdditionalImageURLs += _blobService.AddJpgImage(image.Value) + ",";
+            }
             
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
 
-        public async Task<Location> UpdateLocationAsync(UpdateLocationRequestModel model)
-        {
-            Location updatedLocation = model.UpdatedLocation;
+        //public async Task<Location> UpdateLocationAsync(UpdateLocationRequestModel model)
+        //{
+        //    Location updatedLocation = model.UpdatedLocation;
 
-            if (updatedLocation.BannerImageURL != null)
-            {
-                updatedLocation.BannerImageURL = _blobService.AddJpgImage(model.BannerImage);
-            }
-            if (updatedLocation.AdditionalImageURL != null)
-            {
-                updatedLocation.AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage);
-            }
+        //    if (updatedLocation.BannerImageURL != null)
+        //    {
+        //        updatedLocation.BannerImageURL = _blobService.AddJpgImage(model.BannerImage);
+        //    }
+        //    if (updatedLocation.AdditionalImageURL != null)
+        //    {
+        //        updatedLocation.AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage);
+        //    }
 
-            return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        }
+        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        //}
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);
