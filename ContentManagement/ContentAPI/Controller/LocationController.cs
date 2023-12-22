@@ -2,6 +2,7 @@
 using ContentAPI.Controller.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
+using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,14 +34,14 @@ namespace ContentAPI.Controller
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateLocation([FromBody] UpdateLocationDTO updateLocationDTO)
+        public async Task<IActionResult> UpdateLocation([FromBody] LocationUpdateRequestModel model)
         {
-            if (updateLocationDTO == null)
+            if (model.DTO == null || model.OldLocation == null)
             {
-                return BadRequest("UpdateLocationDTO object is null or invalid");
+                return BadRequest("One or more of the given objects are null or invalid");
             }
 
-            Location updatedLocation = await _locationService.UpdateLocationAsync(model);
+            Location updatedLocation = await _locationService.UpdateLocationAsync(model.DTO, model.OldLocation);
 
             return Ok(updatedLocation);
         }

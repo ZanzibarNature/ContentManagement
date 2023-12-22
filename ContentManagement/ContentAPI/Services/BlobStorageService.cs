@@ -16,5 +16,10 @@ namespace ContentAPI.Services
         {
             return _blobStorageRepo.AddJpgImage(image);
         }
+
+        public void DeleteImage(string blobName)
+        {
+            _blobStorageRepo.DeleteImage(blobName);
+        }
     }
 }

@@ -29,7 +29,6 @@ namespace ContentAPI.Services
                 ImageURLs = new Dictionary<string, string>()
             };
 
-            // Add image urls
             foreach (var image in locationDTO.Base64Images)
             {
                 newLoc.ImageURLs.Add(image.Key, _blobService.AddJpgImage(image.Value));
@@ -39,7 +38,7 @@ namespace ContentAPI.Services
             return newLoc;
         }
 
-        public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO)
+        public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO, Location oldLocation)
         {
             Location updatedLocation = new Location
             {
@@ -51,15 +50,17 @@ namespace ContentAPI.Services
                 Description = DTO.Description,
                 Latitude = DTO.Latitude,
                 Longitude = DTO.Longitude,
+                ImageURLs = oldLocation.ImageURLs
             };
 
-            if (DTO.Base64Images.TryGetValue("BannerImage", out string bannerImage) && bannerImage != null)
-            {
-                updatedLocation.BannerImageURL = _blobService.AddJpgImage(bannerImage);
-            }
+            // Update images in Blob
             foreach (var image in DTO.Base64Images)
             {
-                updatedLocation.AdditionalImageURLs +=
+                if (updatedLocation.ImageURLs.ContainsKey(image.Key))
+                {
+                    _blobService.DeleteImage(image.Value);
+                }
+                updatedLocation.ImageURLs[image.Key] = _blobService.AddJpgImage(image.Value);
             }
 
             return await _locationRepo.UpsertLocationAsync(updatedLocation);

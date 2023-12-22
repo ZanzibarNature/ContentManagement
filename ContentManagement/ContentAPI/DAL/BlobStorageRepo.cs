@@ -18,11 +18,11 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public string? AddJpgImage(string image)
+        public string AddJpgImage(string image)
         {
             if (string.IsNullOrEmpty(image))
             {
-                return null;
+                return string.Empty;
             }
 
             string blobFileName = Guid.NewGuid().ToString() + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + ".jpg";
@@ -42,6 +42,11 @@ namespace ContentAPI.DAL
             }
 
             return blobClient.Uri.ToString();
+        }
+
+        public void DeleteImage(string blobName)
+        {
+            _blobContainerClient.GetBlobClient(blobName).DeleteIfExists();
         }
     }
 }

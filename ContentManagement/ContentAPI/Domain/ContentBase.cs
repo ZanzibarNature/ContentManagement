@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ContentAPI.Domain
 {
@@ -14,10 +15,21 @@ namespace ContentAPI.Domain
 
         // Custom Fields
         public string? SerializedImageURLs { get; set; }
-        public Dictionary<string, string> ImageURLs
+
+        [IgnoreDataMember]
+        public Dictionary<string, string>? ImageURLs
         {
-            get { return JsonConvert.DeserializeObject<Dictionary<string, string>>(SerializedImageURLs); }
-            set { SerializedImageURLs = JsonConvert.SerializeObject(value); }
+            get
+            {
+                if (SerializedImageURLs == null)
+                    return null;
+
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(SerializedImageURLs);
+            }
+            set
+            {
+                SerializedImageURLs = value != null ? JsonConvert.SerializeObject(value) : null;
+            }
         }
 
     }

@@ -4,6 +4,7 @@ namespace ContentAPI.DAL.Interfaces
 {
     public interface IBlobStorageRepo
     {
-        string? AddJpgImage(string image);
+        string AddJpgImage(string image);
+        void DeleteImage(string blobName);
     }
 }
