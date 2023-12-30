@@ -31,6 +31,5 @@ namespace ContentAPI.Domain
                 SerializedImageURLs = value != null ? JsonConvert.SerializeObject(value) : null;
             }
         }
-
     }
 }

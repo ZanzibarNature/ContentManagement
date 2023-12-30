@@ -1,9 +1,8 @@
-﻿using ContentAPI.Domain;
-using ContentAPI.Domain.DTO;
+﻿using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ContentAPI.Controller.Interfaces
+namespace ContentAPI.Controllers.Interfaces
 {
     public interface ILocationController
     {

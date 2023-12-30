@@ -1,12 +1,12 @@
 ﻿using Azure;
-using ContentAPI.Controller.Interfaces;
+using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ContentAPI.Controller
+namespace ContentAPI.Controllers
 {
     [Route("api/Content/Locations")]
     [ApiController]
