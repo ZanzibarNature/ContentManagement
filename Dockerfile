@@ -1,14 +1,5 @@
 # syntax=docker/dockerfile:1
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/engine/reference/builder/
-
-################################################################################
-
-# Learn about building .NET container images:
-# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
-
 # Create a stage for building the application.
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build
 ARG TARGETARCH
@@ -18,24 +9,9 @@ COPY . /source
 WORKDIR /source/ContentManagement/ContentAPI
 
 # Build the application.
-# Leverage a cache mount to /root/.nuget/packages so that subsequent builds don't have to re-download packages.
-# If TARGETARCH is "amd64", replace it with "x64" - "x64" is .NET's canonical name for this and "amd64" doesn't
-#   work in .NET 6.0.
 RUN dotnet publish -o /app
 
-# If you need to enable globalization and time zones:
-# https://github.com/dotnet/dotnet-docker/blob/main/samples/enable-globalization.md
-################################################################################
-# Create a new stage for running the application that contains the minimal
-# runtime dependencies for the application. This often uses a different base
-# image from the build stage where the necessary files are copied from the build
-# stage.
-#
-# The example below uses an aspnet alpine image as the foundation for running the app.
-# It will also use whatever happens to be the most recent version of that tag when you
-# build your Dockerfile. If reproducability is important, consider using a more specific
-# version (e.g., aspnet:7.0.10-alpine-3.18),
-# or SHA (e.g., mcr.microsoft.com/dotnet/aspnet@sha256:f3d99f54d504a21d38e4cc2f13ff47d67235efeeb85c109d3d1ff1808b38d034).
+# Create a stage for running the application.
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS final
 WORKDIR /app
 
@@ -44,7 +20,7 @@ COPY --from=build /app .
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
-ARG UID=10001
+ARG UID=1001
 RUN adduser \
     --disabled-password \
     --gecos "" \
@@ -53,6 +29,17 @@ RUN adduser \
     --no-create-home \
     --uid "${UID}" \
     appuser
+
+# Set environment variables.
+ENV ASPNETCORE_URL http://+:8080
+
+# Give User 1001 ownership and access to /app
+RUN chown -R 1001:0 /app && chmod -R og+rwx /app
+
+# Expose the port.
+EXPOSE 8080
+
+# Run container by default as user with id 1001 (default)
 USER appuser
 
-ENTRYPOINT ["dotnet", "ContentAPI.dll"]
+ENTRYPOINT ["dotnet", "ContentAPI.dll"] 

@@ -10,7 +10,8 @@ namespace ContentAPI.DAL
 
         public LocationRepo()
         {
-            TableServiceClient serviceClient = new TableServiceClient("UseDevelopmentStorage=true");
+            //TableServiceClient serviceClient = new TableServiceClient("UseDevelopmentStorage=true");
+            TableServiceClient serviceClient = new TableServiceClient(Environment.GetEnvironmentVariable("AZURE_CONNECTION"));
             serviceClient.CreateTableIfNotExists("locations");
             _tableClient = serviceClient.GetTableClient("locations");
         }
