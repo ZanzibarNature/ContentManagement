@@ -13,5 +13,6 @@ namespace ContentAPI.Domain.DTO
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public Dictionary<string, string>? Base64Images { get; set; }
+        public string? OldSerializedImageURLs { get; set; }
     }
 }

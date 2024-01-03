@@ -44,7 +44,7 @@ namespace ContentAPI.DAL
 
         public void DeleteImage(string blobName)
         {
-            _blobContainerClient.GetBlobClient(blobName).DeleteIfExists();
+            _blobContainerClient.GetBlobClient(blobName).Delete(snapshotsOption: DeleteSnapshotsOption.IncludeSnapshots);
         }
     }
 }

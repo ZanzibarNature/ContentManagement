@@ -3,6 +3,7 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Services.Interfaces;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Text.Json;
 
 namespace ContentAPI.Services
@@ -44,34 +45,40 @@ namespace ContentAPI.Services
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
+        public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO)
+        {
+            Location updatedLoc = new Location
+            {
+                PartitionKey = DTO.PartitionKey,
+                RowKey = DTO.RowKey,
+                ETag = DTO.ETag,
+                Timestamp = DTO.Timestamp,
+                Name = DTO.Name,
+                Description = DTO.Description,
+                Latitude = DTO.Latitude,
+                Longitude = DTO.Longitude,
+                SerializedImageURLs = DTO.OldSerializedImageURLs
+            };
 
-        //public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO, Location oldLocation)
-        //{
-        //    Location updatedLocation = new Location
-        //    {
-        //        PartitionKey = DTO.PartitionKey,
-        //        RowKey = DTO.RowKey,
-        //        ETag = DTO.ETag,
-        //        Timestamp = DTO.Timestamp,
-        //        Name = DTO.Name,
-        //        Description = DTO.Description,
-        //        Latitude = DTO.Latitude,
-        //        Longitude = DTO.Longitude,
-        //        ImageURLs = oldLocation.ImageURLs
-        //    };
+            Dictionary<string, string> existingImages = JsonSerializer.Deserialize<Dictionary<string, string>>(updatedLoc.SerializedImageURLs);
+            Dictionary<string, string> newImageURLs = new Dictionary<string, string>();
 
-        //    // Update images in Blob
-        //    foreach (var image in DTO.Base64Images)
-        //    {
-        //        if (updatedLocation.ImageURLs.ContainsKey(image.Key))
-        //        {
-        //            _blobService.DeleteImage(image.Value);
-        //        }
-        //        updatedLocation.ImageURLs[image.Key] = _blobService.AddJpgImage(image.Value);
-        //    }
+            // Update images in Blob
+            foreach (var image in DTO.Base64Images)
+            {
+                if (existingImages.ContainsKey(image.Key))
+                {
+                    Uri uri = new Uri(existingImages[image.Key]);
+                    string blobToDelete = Path.Combine(uri.Segments[3..]).Replace('\\', '/').Trim('/', '\\');
+                    _blobService.DeleteImage(blobToDelete);
+                }
+                newImageURLs[image.Key] = _blobService.AddJpgImage(image.Key, image.Value, $"{updatedLoc.PartitionKey}{updatedLoc.RowKey}/");
+            }
 
-        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        //}
+            updatedLoc.SerializedImageURLs = JsonSerializer.Serialize(newImageURLs);
+
+            return await _locationRepo.UpsertLocationAsync(updatedLoc);
+        }
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);
