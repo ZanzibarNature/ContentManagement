@@ -18,14 +18,14 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public string AddJpgImage(string image)
+        public string AddJpgImage(string prefix, string image, string folderName = "")
         {
             if (string.IsNullOrEmpty(image))
             {
                 return string.Empty;
             }
 
-            string blobFileName = Guid.NewGuid().ToString() + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + ".jpg";
+            string blobFileName = folderName + prefix + "-" + Guid.NewGuid().ToString() + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + ".jpg";
 
             BlobClient blobClient = _blobContainerClient.GetBlobClient(blobFileName);
 
@@ -34,9 +34,7 @@ namespace ContentAPI.DAL
                 HttpHeaders = new BlobHttpHeaders { ContentType = "image/jpeg" }
             };
 
-            byte[] imageBytes = Convert.FromBase64String(image);
-
-            using (var stream = new MemoryStream(imageBytes))
+            using (var stream = new MemoryStream(Convert.FromBase64String(image)))
             {
                 blobClient.Upload(stream, options);
             }

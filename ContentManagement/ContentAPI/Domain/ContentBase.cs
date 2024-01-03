@@ -15,21 +15,5 @@ namespace ContentAPI.Domain
 
         // Custom Fields
         public string? SerializedImageURLs { get; set; }
-
-        [IgnoreDataMember]
-        public Dictionary<string, string>? ImageURLs
-        {
-            get
-            {
-                if (SerializedImageURLs == null)
-                    return null;
-
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(SerializedImageURLs);
-            }
-            set
-            {
-                SerializedImageURLs = value != null ? JsonConvert.SerializeObject(value) : null;
-            }
-        }
     }
 }
