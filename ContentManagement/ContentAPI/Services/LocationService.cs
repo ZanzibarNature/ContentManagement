@@ -1,8 +1,9 @@
 ﻿using Azure;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
-using ContentAPI.Domain.RequestModel;
+using ContentAPI.Domain.DTO;
 using ContentAPI.Services.Interfaces;
+using System.Text.Json;
 
 namespace ContentAPI.Services
 {
@@ -16,39 +17,61 @@ namespace ContentAPI.Services
             _blobService = blobService;
         }
 
-        public async Task<Location> CreateLocation(CreateLocationRequestModel model)
+        public async Task<Location> CreateLocation(CreateLocationDTO locationDTO)
         {
             Location newLoc = new Location
             {
                 PartitionKey = "Location",
                 RowKey = Guid.NewGuid().ToString(),
-                Name = model.LocationDTO.Name,
-                Description = model.LocationDTO.Description,
-                Latitude = model.LocationDTO.Latitude,
-                Longitude = model.LocationDTO.Longitude,
-                BannerImageURL = _blobService.AddJpgImage(model.BannerImage),
-                AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage)
+                Name = locationDTO.Name,
+                Description = locationDTO.Description,
+                Latitude = locationDTO.Latitude,
+                Longitude = locationDTO.Longitude,
+                //ImageURLs = new Dictionary<string, string>()
             };
-            
+
+            string blobFolderName = $"{newLoc.PartitionKey}{newLoc.RowKey}/";
+            Dictionary<string, string> blobUrls = new Dictionary<string, string>();
+
+            foreach (var image in locationDTO.Base64Images)
+            {
+                //newLoc.ImageURLs.Add(image.Key, _blobService.AddJpgImage(image.Value));
+                blobUrls.Add(image.Key, _blobService.AddJpgImage(image.Key, image.Value, blobFolderName));
+            }
+
+            newLoc.SerializedImageURLs = JsonSerializer.Serialize(blobUrls);
+
             await _locationRepo.UpsertLocationAsync(newLoc);
             return newLoc;
         }
 
-        public async Task<Location> UpdateLocationAsync(UpdateLocationRequestModel model)
-        {
-            Location updatedLocation = model.UpdatedLocation;
+        //public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO, Location oldLocation)
+        //{
+        //    Location updatedLocation = new Location
+        //    {
+        //        PartitionKey = DTO.PartitionKey,
+        //        RowKey = DTO.RowKey,
+        //        ETag = DTO.ETag,
+        //        Timestamp = DTO.Timestamp,
+        //        Name = DTO.Name,
+        //        Description = DTO.Description,
+        //        Latitude = DTO.Latitude,
+        //        Longitude = DTO.Longitude,
+        //        ImageURLs = oldLocation.ImageURLs
+        //    };
 
-            if (updatedLocation.BannerImageURL != null)
-            {
-                updatedLocation.BannerImageURL = _blobService.AddJpgImage(model.BannerImage);
-            }
-            if (updatedLocation.AdditionalImageURL != null)
-            {
-                updatedLocation.AdditionalImageURL = _blobService.AddJpgImage(model.AdditionalImage);
-            }
+        //    // Update images in Blob
+        //    foreach (var image in DTO.Base64Images)
+        //    {
+        //        if (updatedLocation.ImageURLs.ContainsKey(image.Key))
+        //        {
+        //            _blobService.DeleteImage(image.Value);
+        //        }
+        //        updatedLocation.ImageURLs[image.Key] = _blobService.AddJpgImage(image.Value);
+        //    }
 
-            return await _locationRepo.UpsertLocationAsync(updatedLocation);
-        }
+        //    return await _locationRepo.UpsertLocationAsync(updatedLocation);
+        //}
         public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);

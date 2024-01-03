@@ -1,15 +1,14 @@
 ﻿using ContentAPI.Domain.DTO;
-using ContentAPI.Domain;
-using Microsoft.AspNetCore.Mvc;
 using ContentAPI.Domain.RequestModel;
+using Microsoft.AspNetCore.Mvc;
 
-namespace ContentAPI.Controller.Interfaces
+namespace ContentAPI.Controllers.Interfaces
 {
     public interface ILocationController
     {
         Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey);
-        Task<IActionResult> CreateLocation([FromForm] CreateLocationRequestModel model);
-        Task<IActionResult> UpdateLocation([FromForm] UpdateLocationRequestModel model);
+        Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO);
+        //Task<IActionResult> UpdateLocation([FromBody] LocationUpdateRequestModel model);
         Task<IActionResult> DeleteLocation(string partitionKey, string rowKey);
     }
 }

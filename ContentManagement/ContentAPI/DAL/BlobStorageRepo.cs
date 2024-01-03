@@ -18,14 +18,14 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public string? AddJpgImage(IFormFile image)
+        public string AddJpgImage(string prefix, string image, string folderName = "")
         {
-            if (image == null)
+            if (string.IsNullOrEmpty(image))
             {
-                return null;
+                return string.Empty;
             }
 
-            string blobFileName = Guid.NewGuid().ToString() + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + ".jpg";
+            string blobFileName = folderName + prefix + "-" + Guid.NewGuid().ToString() + DateTime.UtcNow.ToString("yyyyMMddHHmmssfff") + ".jpg";
 
             BlobClient blobClient = _blobContainerClient.GetBlobClient(blobFileName);
 
@@ -34,9 +34,17 @@ namespace ContentAPI.DAL
                 HttpHeaders = new BlobHttpHeaders { ContentType = "image/jpeg" }
             };
 
-            blobClient.Upload(image.OpenReadStream(), options);
+            using (var stream = new MemoryStream(Convert.FromBase64String(image)))
+            {
+                blobClient.Upload(stream, options);
+            }
 
             return blobClient.Uri.ToString();
+        }
+
+        public void DeleteImage(string blobName)
+        {
+            _blobContainerClient.GetBlobClient(blobName).DeleteIfExists();
         }
     }
 }

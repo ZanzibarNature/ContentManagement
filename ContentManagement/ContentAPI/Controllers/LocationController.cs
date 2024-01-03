@@ -1,12 +1,12 @@
 ﻿using Azure;
-using ContentAPI.Controller.Interfaces;
+using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
+using ContentAPI.Domain.DTO;
 using ContentAPI.Domain.RequestModel;
 using ContentAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
-namespace ContentAPI.Controller
+namespace ContentAPI.Controllers
 {
     [Route("api/Content/Locations")]
     [ApiController]
@@ -21,30 +21,30 @@ namespace ContentAPI.Controller
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromForm] CreateLocationRequestModel model)
+        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO)
         {
-            if (model.LocationDTO == null)
+            if (locationDTO == null)
             {
                 return BadRequest("LocationDTO object is null or invalid");
             }
 
-            Location newLocation = await _locationService.CreateLocation(model);
+            Location newLocation = await _locationService.CreateLocation(locationDTO);
 
             return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateLocation([FromForm] UpdateLocationRequestModel model)
-        {
-            if (model.UpdatedLocation == null)
-            {
-                return BadRequest("Updated Location object is null or invalid");
-            }
+        //[HttpPut("Update")]
+        //public async Task<IActionResult> UpdateLocation([FromBody] LocationUpdateRequestModel model)
+        //{
+        //    if (model.DTO == null || model.OldLocation == null)
+        //    {
+        //        return BadRequest("One or more of the given objects are null or invalid");
+        //    }
 
-            Location updatedLocation = await _locationService.UpdateLocationAsync(model);
+        //    Location updatedLocation = await _locationService.UpdateLocationAsync(model.DTO, model.OldLocation);
 
-            return Ok(updatedLocation);
-        }
+        //    return Ok(updatedLocation);
+        //}
 
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey)

@@ -4,6 +4,7 @@ namespace ContentAPI.Services.Interfaces
 {
     public interface IBlobStorageService
     {
-        string AddJpgImage(IFormFile image);
+        string AddJpgImage(string prefix, string image, string folderName = "");
+        void DeleteImage(string blobName);
     }
 }

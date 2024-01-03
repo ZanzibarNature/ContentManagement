@@ -1,5 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using ContentAPI.DAL.Interfaces;
+﻿using ContentAPI.DAL.Interfaces;
 using ContentAPI.Services.Interfaces;
 
 namespace ContentAPI.Services
@@ -13,9 +12,14 @@ namespace ContentAPI.Services
             _blobStorageRepo = blobStorageRepo;
         }
 
-        public string AddJpgImage(IFormFile image)
+        public string AddJpgImage(string prefix, string image, string folderName = "")
         {
-            return _blobStorageRepo.AddJpgImage(image);
+            return _blobStorageRepo.AddJpgImage(prefix, image, folderName);
+        }
+
+        public void DeleteImage(string blobName)
+        {
+            _blobStorageRepo.DeleteImage(blobName);
         }
     }
 }

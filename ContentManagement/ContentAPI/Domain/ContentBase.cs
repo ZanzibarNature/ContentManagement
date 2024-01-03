@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using Azure.Core.Serialization;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace ContentAPI.Domain
 {
@@ -13,7 +14,6 @@ namespace ContentAPI.Domain
         public ETag ETag { get; set; }
 
         // Custom Fields
-        public string? BannerImageURL { get; set; }
-        public string? AdditionalImageURL { get; set; }
+        public string? SerializedImageURLs { get; set; }
     }
 }
