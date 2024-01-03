@@ -10,7 +10,7 @@ namespace ContentAPI.DAL
 
         public BlobStorageRepo()
         {
-            string connectionString = "UseDevelopmentStorage=true";
+            string? connectionString = Environment.GetEnvironmentVariable("AZURE_CONNECTION");
             string containerName = "image-container";
 
             _blobContainerClient = new BlobContainerClient(connectionString, containerName);

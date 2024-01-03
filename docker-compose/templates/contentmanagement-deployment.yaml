@@ -26,12 +26,12 @@ spec:
         io.kompose.service: contentmanagement
     spec:
       containers:
-          - env:
-            - name: AZURE_CONNECTION
-              valueFrom:
-                configMapKeyRef:
-                  name: content-config
-                  key: AZURE_CONNECTION
+        - env:
+          - name: AZURE_CONNECTION
+            valueFrom:
+              configMapKeyRef:
+                name: content-config
+                key: AZURE_CONNECTION
         - image: zanzibarinh/contentmanagement:latest
           name: contentmanagement
           resources: {}
