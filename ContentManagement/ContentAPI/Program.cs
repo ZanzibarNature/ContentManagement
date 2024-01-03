@@ -3,58 +3,51 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Services;
 using ContentAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
-using Microsoft.Extensions.Azure;
-var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddAzureClients(clientBuilder =>
+namespace ContentAPI
 {
-    clientBuilder.AddBlobServiceClient(builder.Configuration["AzureWebStorage:blob"], preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["AzureWebStorage:queue"], preferMsi: true);
-});
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
 
-// Add Services
-builder.Services.AddScoped<ILocationService, LocationService>();
-builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
-// Add Repositories
-builder.Services.AddScoped<ILocationRepo<Location>, LocationRepo<Location>>();
-builder.Services.AddScoped<IBlobStorageRepo, BlobStorageRepo>();
+            // Add Services
+            builder.Services.AddScoped<ILocationService, LocationService>();
+            builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
+            // Add Repositories
+            builder.Services.AddScoped<ILocationRepo<Location>, LocationRepo<Location>>();
+            builder.Services.AddScoped<IBlobStorageRepo, BlobStorageRepo>();
 
-var app = builder.Build();
+            // TO DO: Add security via the KeyCloak server
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+            var app = builder.Build();
+
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
 }
-
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
-
-app.MapControllers();
-
-app.Run();
