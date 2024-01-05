@@ -2,7 +2,6 @@
 using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
-using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

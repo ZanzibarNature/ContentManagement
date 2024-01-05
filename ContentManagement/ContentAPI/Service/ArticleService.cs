@@ -1,5 +1,4 @@
 ﻿using Azure;
-using ContentAPI.DAL;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
