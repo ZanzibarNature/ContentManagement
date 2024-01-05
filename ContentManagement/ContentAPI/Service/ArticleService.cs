@@ -1,4 +1,5 @@
 ﻿using Azure;
+using ContentAPI.DAL;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
@@ -28,7 +29,7 @@ namespace ContentAPI.Service
                 Subtitle = DTO.Subtitle,
                 MainText = DTO.MainText
             };
-            newArt.SerializedImageURLs = JsonSerializer.Serialize(_blobService.GetImageURLs(DTO.Base64Images, newArt));
+            newArt.SerializedImageURLs = JsonSerializer.Serialize(_blobService.StoreNewImagesAndRetrieveBlobUrls(DTO.Base64Images, newArt));
 
             await _articleRepo.UpsertAsync(newArt);
             return newArt;
@@ -36,7 +37,7 @@ namespace ContentAPI.Service
 
         public async Task<Response> DeleteAsync(string partitionKey, string rowKey)
         {
-            throw new NotImplementedException();
+            return await _articleRepo.DeleteAsync(partitionKey, rowKey);
         }
 
         public async Task<Article> GetByKeyAsync(string partitionKey, string rowKey)
@@ -46,7 +47,20 @@ namespace ContentAPI.Service
 
         public async Task<Article> UpdateAsync(UpdateArticleDTO DTO)
         {
-            throw new NotImplementedException();
+            Article updatedArt = new Article
+            {
+                PartitionKey = DTO.PartitionKey,
+                RowKey = DTO.RowKey,
+                ETag = DTO.ETag,
+                Timestamp = DTO.Timestamp,
+                Title = DTO.Title,
+                Subtitle = DTO.Subtitle,
+                MainText = DTO.MainText,
+            };
+
+            updatedArt.SerializedImageURLs = JsonSerializer.Serialize(_blobService.UpdateImagesAndRetrieveBlobUrls(DTO.OldSerializedImageURLs, DTO.Base64Images, updatedArt));
+
+            return await _articleRepo.UpsertAsync(updatedArt);
         }
     }
 }

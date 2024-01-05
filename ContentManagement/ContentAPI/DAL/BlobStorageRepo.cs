@@ -20,7 +20,7 @@ namespace ContentAPI.DAL
             _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
-        public string AddJpgImage(string prefix, string image, string folderName = "")
+        public string StoreJpgImage(string prefix, string image, string folderName = "")
         {
             if (string.IsNullOrEmpty(image))
             {

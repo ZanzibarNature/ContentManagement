@@ -1,6 +1,8 @@
-﻿using ContentAPI.Controllers.Interfaces;
+﻿using Azure;
+using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
+using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,12 +33,33 @@ namespace ContentAPI.Controllers
             return CreatedAtAction(nameof(GetByKey), new { partitionKey = newArt.PartitionKey, rowKey = newArt.RowKey }, newArt);
         }
 
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateArticleDTO DTO)
+        {
+            if (DTO == null)
+            {
+                return BadRequest("The given DTO is null or invalid");
+            }
+
+            Article updatedArt = await _articleService.UpdateAsync(DTO);
+
+            return Ok(updatedArt);
+        }
+
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
         {
             Article art = await _articleService.GetByKeyAsync(partitionKey, rowKey);
 
             return art == null ? NotFound() : Ok(art);
+        }
+
+        [HttpDelete("Delete/{partitionKey}/{rowKey}")]
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
+        {
+            Response response = await _articleService.DeleteAsync(partitionKey, rowKey);
+
+            return response.IsError ? NotFound("Given keypair does not exist") : NoContent();
         }
     }
 }

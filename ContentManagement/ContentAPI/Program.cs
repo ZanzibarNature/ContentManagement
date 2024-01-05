@@ -3,6 +3,7 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
+using System.Net;
 using System.Text.Json.Serialization;
 
 namespace ContentAPI
@@ -17,10 +18,10 @@ namespace ContentAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //builder.WebHost.ConfigureKestrel(options =>
-            //{
-            //    options.Listen(IPAddress.Any, 8080);
-            //});
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Listen(IPAddress.Any, 8080);
+            });
 
             // Add Services
             builder.Services.AddScoped<ILocationService, LocationService>();

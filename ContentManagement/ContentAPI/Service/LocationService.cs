@@ -31,7 +31,7 @@ namespace ContentAPI.Service
                 GoogleMapsURL = DTO.GoogleMapsURL
             };
 
-            newLoc.SerializedImageURLs = JsonSerializer.Serialize(_blobService.GetImageURLs(DTO.Base64Images, newLoc));
+            newLoc.SerializedImageURLs = JsonSerializer.Serialize(_blobService.StoreNewImagesAndRetrieveBlobUrls(DTO.Base64Images, newLoc));
             newLoc.SerializedIconNames = JsonSerializer.Serialize(DTO.IconNames);
 
             await _locationRepo.UpsertAsync(newLoc);
@@ -51,10 +51,9 @@ namespace ContentAPI.Service
                 Longitude = DTO.Longitude,
                 InvolvementHighlight = DTO.InvolvementHighlight,
                 GoogleMapsURL = DTO.GoogleMapsURL,
-                SerializedImageURLs = DTO.OldSerializedImageURLs
             };
 
-            Dictionary<string, string> imageURLs = JsonSerializer.Deserialize<Dictionary<string, string>>(updatedLoc.SerializedImageURLs);
+            Dictionary<string, string> imageURLs = JsonSerializer.Deserialize<Dictionary<string, string>>(DTO.OldSerializedImageURLs);
 
             // Update images in Blob
             foreach (var image in DTO.Base64Images)
@@ -65,7 +64,7 @@ namespace ContentAPI.Service
                     string blobToDelete = Path.Combine(uri.Segments[3..]).Replace('\\', '/').Trim('/', '\\');
                     _blobService.DeleteImage(blobToDelete);
                 }
-                imageURLs[image.Key] = _blobService.AddJpgImage(image.Key, image.Value, $"{updatedLoc.PartitionKey}{updatedLoc.RowKey}/");
+                imageURLs[image.Key] = _blobService.StoreJpgImage(image.Key, image.Value, $"{updatedLoc.PartitionKey}{updatedLoc.RowKey}/");
             }
 
             updatedLoc.SerializedImageURLs = JsonSerializer.Serialize(imageURLs);
