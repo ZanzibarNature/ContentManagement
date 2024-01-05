@@ -1,6 +1,4 @@
-﻿using Azure.Storage.Blobs;
-
-namespace ContentAPI.DAL.Interfaces
+﻿namespace ContentAPI.DAL.Interfaces
 {
     public interface IBlobStorageRepo
     {

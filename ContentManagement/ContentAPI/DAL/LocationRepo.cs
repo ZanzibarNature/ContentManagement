@@ -7,11 +7,12 @@ namespace ContentAPI.DAL
     public class LocationRepo<T> : ILocationRepo<T> where T : class, ITableEntity, new()
     {
         private readonly TableClient _tableClient;
+        private readonly IConfiguration _config;
 
-        public LocationRepo()
+        public LocationRepo(IConfiguration config)
         {
-            //TableServiceClient serviceClient = new TableServiceClient("UseDevelopmentStorage=true");
-            TableServiceClient serviceClient = new TableServiceClient(Environment.GetEnvironmentVariable("AZURE_CONNECTION"));
+            _config = config;
+            TableServiceClient serviceClient = new TableServiceClient(Environment.GetEnvironmentVariable("AZURE_CONNECTION") ?? _config["AzureWebStorage"]);
             serviceClient.CreateTableIfNotExists("locations");
             _tableClient = serviceClient.GetTableClient("locations");
         }

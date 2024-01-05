@@ -1,6 +1,4 @@
-﻿using Azure.Storage.Blobs;
-
-namespace ContentAPI.Services.Interfaces
+﻿namespace ContentAPI.Services.Interfaces
 {
     public interface IBlobStorageService
     {

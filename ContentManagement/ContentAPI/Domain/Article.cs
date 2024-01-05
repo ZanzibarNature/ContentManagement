@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace ContentAPI.Domain
+﻿namespace ContentAPI.Domain
 {
     public class Article : ContentBase
     {

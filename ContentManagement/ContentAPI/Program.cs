@@ -16,7 +16,7 @@ namespace ContentAPI
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-    
+
             builder.WebHost.ConfigureKestrel(options =>
             {
                 options.Listen(IPAddress.Any, 8080);

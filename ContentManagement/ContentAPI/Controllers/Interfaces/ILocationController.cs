@@ -1,5 +1,4 @@
 ﻿using ContentAPI.Domain.DTO;
-using ContentAPI.Domain.RequestModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentAPI.Controllers.Interfaces

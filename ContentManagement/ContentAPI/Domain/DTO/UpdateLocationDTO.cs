@@ -14,5 +14,8 @@ namespace ContentAPI.Domain.DTO
         public double Longitude { get; set; }
         public Dictionary<string, string>? Base64Images { get; set; }
         public string? OldSerializedImageURLs { get; set; }
+        public List<string>? IconNames { get; set; }
+        public string? GoogleMapsURL { get; set; }
+        public string? InvolvementHighlight { get; set; }
     }
 }

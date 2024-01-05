@@ -1,7 +1,5 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using Newtonsoft.Json;
-using System.Runtime.Serialization;
 
 namespace ContentAPI.Domain
 {

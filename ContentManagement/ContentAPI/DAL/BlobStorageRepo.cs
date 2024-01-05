@@ -7,10 +7,12 @@ namespace ContentAPI.DAL
     public class BlobStorageRepo : IBlobStorageRepo
     {
         private readonly BlobContainerClient _blobContainerClient;
+        private readonly IConfiguration _config;
 
-        public BlobStorageRepo()
+        public BlobStorageRepo(IConfiguration config)
         {
-            string? connectionString = Environment.GetEnvironmentVariable("AZURE_CONNECTION");
+            _config = config;
+            string? connectionString = Environment.GetEnvironmentVariable("AZURE_CONNECTION") ?? _config["AzureWebStorage"];
             string containerName = "image-container";
 
             _blobContainerClient = new BlobContainerClient(connectionString, containerName);
