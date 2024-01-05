@@ -1,5 +1,4 @@
 ﻿using Azure;
-using ContentAPI.DAL;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
@@ -23,7 +22,7 @@ namespace ContentAPI.Service
         {
             Article newArt = new Article
             {
-                PartitionKey = "Article",
+                PartitionKey = DTO.ArticleType.ToString(),
                 RowKey = Guid.NewGuid().ToString(),
                 Title = DTO.Title,
                 Subtitle = DTO.Subtitle,

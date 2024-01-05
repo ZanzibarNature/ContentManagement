@@ -1,7 +1,10 @@
-﻿namespace ContentAPI.Domain.DTO
+﻿using ContentAPI.Domain.Enum;
+
+namespace ContentAPI.Domain.DTO
 {
     public class CreateArticleDTO
     {
+        public ArticleType ArticleType { get; set; }
         public string? Title { get; set; }
         public string? Subtitle { get; set; }
         public string? MainText { get; set; }

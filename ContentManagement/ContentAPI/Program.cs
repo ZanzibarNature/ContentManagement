@@ -3,7 +3,7 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
-using System.Net;
+using System.Text.Json.Serialization;
 
 namespace ContentAPI
 {
@@ -17,18 +17,23 @@ namespace ContentAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                options.Listen(IPAddress.Any, 8080);
-            });
+            //builder.WebHost.ConfigureKestrel(options =>
+            //{
+            //    options.Listen(IPAddress.Any, 8080);
+            //});
 
             // Add Services
             builder.Services.AddScoped<ILocationService, LocationService>();
+            builder.Services.AddScoped<IArticleService, ArticleService>();
             builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
             // Add Repositories
             builder.Services.AddScoped<ILocationRepo<Location>, LocationRepo<Location>>();
+            builder.Services.AddScoped<IArticleRepo<Article>, ArticleRepo<Article>>();
             builder.Services.AddScoped<IBlobStorageRepo, BlobStorageRepo>();
+
+            // Add service to convert Strings to Enums
+            builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
             // TO DO: Add security via the KeyCloak server
 
