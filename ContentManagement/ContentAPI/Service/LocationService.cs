@@ -2,10 +2,10 @@
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
-using ContentAPI.Services.Interfaces;
+using ContentAPI.Service.Interfaces;
 using System.Text.Json;
 
-namespace ContentAPI.Services
+namespace ContentAPI.Service
 {
     public class LocationService : ILocationService
     {
@@ -17,35 +17,27 @@ namespace ContentAPI.Services
             _blobService = blobService;
         }
 
-        public async Task<Location> CreateLocation(CreateLocationDTO locationDTO)
+        public async Task<Location> Create(CreateLocationDTO DTO)
         {
             Location newLoc = new Location
             {
                 PartitionKey = "Location",
                 RowKey = Guid.NewGuid().ToString(),
-                Name = locationDTO.Name,
-                Description = locationDTO.Description,
-                Latitude = locationDTO.Latitude,
-                Longitude = locationDTO.Longitude,
-                InvolvementHighlight = locationDTO.InvolvementHighlight,
-                GoogleMapsURL = locationDTO.GoogleMapsURL
+                Name = DTO.Name,
+                Description = DTO.Description,
+                Latitude = DTO.Latitude,
+                Longitude = DTO.Longitude,
+                InvolvementHighlight = DTO.InvolvementHighlight,
+                GoogleMapsURL = DTO.GoogleMapsURL
             };
 
-            string blobFolderName = $"{newLoc.PartitionKey}{newLoc.RowKey}/";
-            Dictionary<string, string> blobUrls = new Dictionary<string, string>();
+            newLoc.SerializedImageURLs = JsonSerializer.Serialize(_blobService.GetImageURLs(DTO.Base64Images, newLoc));
+            newLoc.SerializedIconNames = JsonSerializer.Serialize(DTO.IconNames);
 
-            foreach (var image in locationDTO.Base64Images)
-            {
-                blobUrls.Add(image.Key, _blobService.AddJpgImage(image.Key, image.Value, blobFolderName));
-            }
-
-            newLoc.SerializedImageURLs = JsonSerializer.Serialize(blobUrls);
-            newLoc.SerializedIconNames = JsonSerializer.Serialize(locationDTO.IconNames);
-
-            await _locationRepo.UpsertLocationAsync(newLoc);
+            await _locationRepo.UpsertAsync(newLoc);
             return newLoc;
         }
-        public async Task<Location> UpdateLocationAsync(UpdateLocationDTO DTO)
+        public async Task<Location> UpdateAsync(UpdateLocationDTO DTO)
         {
             Location updatedLoc = new Location
             {
@@ -79,15 +71,15 @@ namespace ContentAPI.Services
             updatedLoc.SerializedImageURLs = JsonSerializer.Serialize(imageURLs);
             updatedLoc.SerializedIconNames = JsonSerializer.Serialize(DTO.IconNames);
 
-            return await _locationRepo.UpsertLocationAsync(updatedLoc);
+            return await _locationRepo.UpsertAsync(updatedLoc);
         }
-        public async Task<Location> GetLocationByKeyAsync(string partitionKey, string rowKey)
+        public async Task<Location> GetByKeyAsync(string partitionKey, string rowKey)
         {
-            return await _locationRepo.GetLocationByKeyAsync(partitionKey, rowKey);
+            return await _locationRepo.GetByKeyAsync(partitionKey, rowKey);
         }
-        public async Task<Response> DeleteLocationAsync(string partitionKey, string rowKey)
+        public async Task<Response> DeleteAsync(string partitionKey, string rowKey)
         {
-            return await _locationRepo.DeleteLocationAsync(partitionKey, rowKey);
+            return await _locationRepo.DeleteAsync(partitionKey, rowKey);
         }
     }
 }

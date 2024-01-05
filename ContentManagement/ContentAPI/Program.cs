@@ -1,8 +1,8 @@
 using ContentAPI.DAL;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
-using ContentAPI.Services;
-using ContentAPI.Services.Interfaces;
+using ContentAPI.Service;
+using ContentAPI.Service.Interfaces;
 using System.Net;
 
 namespace ContentAPI

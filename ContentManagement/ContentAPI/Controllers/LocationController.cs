@@ -2,7 +2,7 @@
 using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
-using ContentAPI.Services.Interfaces;
+using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentAPI.Controllers
@@ -20,43 +20,43 @@ namespace ContentAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateLocation([FromBody] CreateLocationDTO locationDTO)
+        public async Task<IActionResult> Create([FromBody] CreateLocationDTO DTO)
         {
-            if (locationDTO == null)
+            if (DTO == null)
             {
                 return BadRequest("LocationDTO object is null or invalid");
             }
 
-            Location newLocation = await _locationService.CreateLocation(locationDTO);
+            Location newLocation = await _locationService.Create(DTO);
 
-            return CreatedAtAction(nameof(GetLocationByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
+            return CreatedAtAction(nameof(GetByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateLocation([FromBody] UpdateLocationDTO dto)
+        public async Task<IActionResult> Update([FromBody] UpdateLocationDTO DTO)
         {
-            if (dto == null)
+            if (DTO == null)
             {
                 return BadRequest("The given DTO is null or invalid");
             }
 
-            Location updatedLocation = await _locationService.UpdateLocationAsync(dto);
+            Location updatedLocation = await _locationService.UpdateAsync(DTO);
 
             return Ok(updatedLocation);
         }
 
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
-        public async Task<IActionResult> GetLocationByKey(string partitionKey, string rowKey)
+        public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
         {
-            var location = await _locationService.GetLocationByKeyAsync(partitionKey, rowKey);
+            var location = await _locationService.GetByKeyAsync(partitionKey, rowKey);
 
             return location == null ? NotFound() : Ok(location);
         }
 
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
-        public async Task<IActionResult> DeleteLocation(string partitionKey, string rowKey)
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
         {
-            Response response = await _locationService.DeleteLocationAsync(partitionKey, rowKey);
+            Response response = await _locationService.DeleteAsync(partitionKey, rowKey);
 
             return response.IsError ? NotFound("Given keypair does not exist") : NoContent();
         }

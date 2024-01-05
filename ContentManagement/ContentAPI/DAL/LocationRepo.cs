@@ -17,15 +17,15 @@ namespace ContentAPI.DAL
             _tableClient = serviceClient.GetTableClient("locations");
         }
 
-        public async Task<Response> DeleteLocationAsync(string partitionKey, string rowKey)
+        public async Task<Response> DeleteAsync(string partitionKey, string rowKey)
         {
             return await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
         }
-        public async Task<T> GetLocationByKeyAsync(string partitionKey, string rowKey)
+        public async Task<T> GetByKeyAsync(string partitionKey, string rowKey)
         {
             return await _tableClient.GetEntityAsync<T>(partitionKey, rowKey);
         }
-        public async Task<T> UpsertLocationAsync(T location)
+        public async Task<T> UpsertAsync(T location)
         {
             await _tableClient.UpsertEntityAsync(location);
             return location;
