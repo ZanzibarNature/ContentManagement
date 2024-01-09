@@ -14,18 +14,15 @@ namespace ContentAPI.Middleware
 
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            var accessToken = string.Empty;
-
-            if (context.Request.Headers.TryGetValue("Authorization", out var authHeader))
-            {
-                accessToken = authHeader.ToString().Split(' ')[1];
-            }
-            else
+            // Check for token
+            if (!context.Request.Headers.TryGetValue("Authorization", out var authHeader))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return;
             }
+            string accessToken = authHeader.ToString().Split(' ')[1];
 
+            // Check if request works (AKA is token valid)
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             var reponse = await _httpClient.GetAsync("https://authentication-api-kawa-foundation-app-dev.apps.ocp6-inholland.joran-bergfeld.com/authentication/userinfo", context.RequestAborted);
 
@@ -35,9 +32,11 @@ namespace ContentAPI.Middleware
                 return;
             }
 
+            // Check for CMS (content manager) role
             var jsonContent = await reponse.Content.ReadAsStringAsync();
             JArray roles = JsonConvert.DeserializeObject<dynamic>(jsonContent).roles;
-            if (!roles.Contains("cms"))
+            List<string> list = (List<string>)roles.ToObject(typeof(List<string>));
+            if (!list.Contains("cms"))
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
