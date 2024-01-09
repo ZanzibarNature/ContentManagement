@@ -3,6 +3,9 @@ using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text.Json.Serialization;
 
@@ -36,7 +39,32 @@ namespace ContentAPI
             // Add service to convert Strings to Enums
             builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-            // TO DO: Add security via the KeyCloak server
+
+            // Add keycloak security
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            })
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = Environment.GetEnvironmentVariable("KC_HOSTNAME_URL") ?? builder.Configuration["KC_HOSTNAME_URL"] + " /auth/realms/zanzibar-dev";
+                options.ClientId = "your-client-id";
+                options.ClientSecret = "your-client-secret";
+                options.ResponseType = "code";
+                options.SaveTokens = true;
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    NameClaimType = "preferred_username",
+                    RoleClaimType = "roles"
+                };
+            });
 
             var app = builder.Build();
 
@@ -47,11 +75,9 @@ namespace ContentAPI
                 app.UseHsts();
             }
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
 
             app.UseHttpsRedirection();
 
