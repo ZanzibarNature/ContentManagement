@@ -1,12 +1,10 @@
 using ContentAPI.DAL;
+using ContentAPI.Middleware;
 using ContentAPI.DAL.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-using System.Net;
 using System.Text.Json.Serialization;
 
 namespace ContentAPI
@@ -21,10 +19,13 @@ namespace ContentAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                options.Listen(IPAddress.Any, 8080);
-            });
+            builder.Services.AddAuthentication(defaultScheme: CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie();
+
+            //builder.WebHost.ConfigureKestrel(options =>
+            //{
+            //    options.Listen(IPAddress.Any, 8080);
+            //});
 
             // Add Services
             builder.Services.AddScoped<ILocationService, LocationService>();
@@ -39,34 +40,21 @@ namespace ContentAPI
             // Add service to convert Strings to Enums
             builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-
-            // Add keycloak security
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-            })
-            .AddOpenIdConnect(options =>
-            {
-                options.Authority = Environment.GetEnvironmentVariable("KC_HOSTNAME_URL") ?? builder.Configuration["KC_HOSTNAME_URL"] + " /auth/realms/zanzibar-dev";
-                options.ClientId = "your-client-id";
-                options.ClientSecret = "your-client-secret";
-                options.ResponseType = "code";
-                options.SaveTokens = true;
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = "preferred_username",
-                    RoleClaimType = "roles"
-                };
-            });
-
             var app = builder.Build();
+
+            // Add custom middleware for Security
+            app.UseMiddleware<AuthMiddleware>();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             if (!app.Environment.IsDevelopment())
             {
@@ -78,10 +66,7 @@ namespace ContentAPI
             app.UseSwagger();
             app.UseSwaggerUI();
 
-
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
 
             app.MapControllers();
 
