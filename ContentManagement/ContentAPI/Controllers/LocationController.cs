@@ -22,8 +22,19 @@ namespace ContentAPI.Controllers
             _blobService = blobService;
         }
 
+        //[MiddlewareFilter(typeof(AuthMiddleware))]
+        //[AllowAnonymous]
+        [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
+        public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
+        {
+            Location location = await _locationService.GetByKeyAsync(partitionKey, rowKey);
+
+            return location == null ? NotFound("Entity with given key was not found") : Ok(location);
+        }
+
+        //[Authorize]
+        [CustomAuth]
         [HttpPost("Create")]
-        [MiddlewareFilter(typeof(AuthMiddleware))]
         public async Task<IActionResult> Create([FromBody] CreateLocationDTO DTO)
         {
             if (DTO == null)
@@ -36,16 +47,9 @@ namespace ContentAPI.Controllers
             return CreatedAtAction(nameof(GetByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
-        public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
-        {
-            var location = await _locationService.GetByKeyAsync(partitionKey, rowKey);
-
-            return location == null ? NotFound("Entity with given key was not found") : Ok(location);
-        }
-
+        //[Authorize]
+        [CustomAuth]
         [HttpPut("Update")]
-        [MiddlewareFilter(typeof(AuthMiddleware))]
         public async Task<IActionResult> Update([FromBody] UpdateLocationDTO DTO)
         {
             if (DTO == null)
@@ -58,8 +62,9 @@ namespace ContentAPI.Controllers
             return Ok(updatedLocation);
         }
 
+        //[Authorize]
+        [CustomAuth]
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
-        [MiddlewareFilter(typeof(AuthMiddleware))]
         public async Task<IActionResult> Delete(string partitionKey, string rowKey)
         {
             Response response = await _locationService.DeleteAsync(partitionKey, rowKey);
