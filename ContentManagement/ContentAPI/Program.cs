@@ -19,13 +19,13 @@ namespace ContentAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            //if (!builder.Environment.IsDevelopment())
-            //{
-            //    builder.WebHost.ConfigureKestrel(options =>
-            //    {
-            //        options.Listen(IPAddress.Any, 8080);
-            //    });
-            //}
+            if (!builder.Environment.IsDevelopment())
+            {
+                builder.WebHost.ConfigureKestrel(options =>
+                {
+                    options.Listen(IPAddress.Any, 8080);
+                });
+            }
 
             // Add Services
             builder.Services.AddScoped<ILocationService, LocationService>();
