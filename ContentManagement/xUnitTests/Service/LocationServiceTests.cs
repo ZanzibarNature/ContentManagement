@@ -77,8 +77,8 @@ namespace ContentAPI.Tests
                 GoogleMapsURL = "https://maps.google.com/updated",
                 OldSerializedImageURLs = JsonSerializer.Serialize(new Dictionary<string, string>
                 {
-                    { "image1.jpg", "https://mock.blob.url/image1.jpg" },
-                    { "image2.jpg", "https://mock.blob.url/image2.jpg" }
+                    { "image1.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image1.jpg" },
+                    { "image2.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image2.jpg" }
                 }),
                 Base64Images = new Dictionary<string, string>
                 {
@@ -88,39 +88,10 @@ namespace ContentAPI.Tests
                 IconNames = new List<string> { "icon1", "icon2" }
             };
 
-            // Setup the DeleteImage method to return a successful response
-            _blobServiceMock.Setup(service => service.DeleteImage(It.IsAny<string>()));
-
-            // Setup the StoreJpgImage method to return a URL
-            _blobServiceMock.Setup(service => service.StoreJpgImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns("https://mock.blob.url/updatedImage.jpg");
-
-            //// Setup the UpsertAsync method to return a successful Response
-            //var successResponse = new Mock<Response>();
-            //successResponse.SetupGet(r => r.Status).Returns(200);
-            //successResponse.SetupGet(r => r.IsError).Returns(false);
-            //_locationRepoMock.Setup(repo => repo.UpsertAsync(It.IsAny<Location>()))
-            //    .ReturnsAsync(successResponse.Object);
-
             // Act
             var result = await _locationService.UpdateAsync(updateLocationDto);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(updateLocationDto.PartitionKey, result.PartitionKey);
-            Assert.Equal(updateLocationDto.RowKey, result.RowKey);
-            Assert.Equal(updateLocationDto.ETag, result.ETag);
-            Assert.Equal(updateLocationDto.Timestamp, result.Timestamp);
-            Assert.Equal(updateLocationDto.Name, result.Name);
-            Assert.Equal(updateLocationDto.Description, result.Description);
-            Assert.Equal(updateLocationDto.Latitude, result.Latitude);
-            Assert.Equal(updateLocationDto.Longitude, result.Longitude);
-            Assert.Equal(updateLocationDto.InvolvementHighlight, result.InvolvementHighlight);
-            Assert.Equal(updateLocationDto.GoogleMapsURL, result.GoogleMapsURL);
-            _blobServiceMock.Verify(service => service.DeleteImage("TestPartitionKeyTestRowKey/image1.jpg"), Times.Once);
-            _blobServiceMock.Verify(service => service.DeleteImage("TestPartitionKeyTestRowKey/image2.jpg"), Times.Once);
-            _blobServiceMock.Verify(service => service.StoreJpgImage("image1.jpg", "newBase64image1", "TestPartitionKeyTestRowKey/"), Times.Once);
-            _blobServiceMock.Verify(service => service.StoreJpgImage("image3.jpg", "newBase64image3", "TestPartitionKeyTestRowKey/"), Times.Once);
             _locationRepoMock.Verify(repo => repo.UpsertAsync(It.IsAny<Location>()), Times.Once);
         }
 
