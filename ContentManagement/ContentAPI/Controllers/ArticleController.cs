@@ -2,6 +2,7 @@
 using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
+using ContentAPI.Middleware;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ namespace ContentAPI.Controllers
             _blobService = blobService;
         }
 
+        [CustomAuth]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateArticleDTO DTO)
         {
@@ -32,6 +34,7 @@ namespace ContentAPI.Controllers
             return CreatedAtAction(nameof(GetByKey), new { partitionKey = newArt.PartitionKey, rowKey = newArt.RowKey }, newArt);
         }
 
+        [CustomAuth]
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateArticleDTO DTO)
         {
@@ -53,6 +56,7 @@ namespace ContentAPI.Controllers
             return art == null ? NotFound() : Ok(art);
         }
 
+        [CustomAuth]
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> Delete(string partitionKey, string rowKey)
         {

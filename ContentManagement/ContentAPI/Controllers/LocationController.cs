@@ -4,8 +4,6 @@ using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Middleware;
 using ContentAPI.Service.Interfaces;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContentAPI.Controllers
@@ -22,8 +20,6 @@ namespace ContentAPI.Controllers
             _blobService = blobService;
         }
 
-        //[MiddlewareFilter(typeof(AuthMiddleware))]
-        //[AllowAnonymous]
         [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
         {
@@ -32,7 +28,6 @@ namespace ContentAPI.Controllers
             return location == null ? NotFound("Entity with given key was not found") : Ok(location);
         }
 
-        //[Authorize]
         [CustomAuth]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateLocationDTO DTO)
@@ -47,7 +42,6 @@ namespace ContentAPI.Controllers
             return CreatedAtAction(nameof(GetByKey), new { partitionKey = newLocation.PartitionKey, rowKey = newLocation.RowKey }, newLocation);
         }
 
-        //[Authorize]
         [CustomAuth]
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateLocationDTO DTO)
@@ -62,7 +56,6 @@ namespace ContentAPI.Controllers
             return Ok(updatedLocation);
         }
 
-        //[Authorize]
         [CustomAuth]
         [HttpDelete("Delete/{partitionKey}/{rowKey}")]
         public async Task<IActionResult> Delete(string partitionKey, string rowKey)
