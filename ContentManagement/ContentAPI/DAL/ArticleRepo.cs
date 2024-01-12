@@ -4,15 +4,13 @@ using ContentAPI.DAL.Interfaces;
 
 namespace ContentAPI.DAL
 {
-    public class ArticleRepo<T> : IArticleRepo<T> where T : class, ITableEntity, new()
+    public class ArticleRepo<T> : BaseRepo, IArticleRepo<T> where T : class, ITableEntity, new()
     {
         private readonly TableClient _tableClient;
-        private readonly IConfiguration _config;
 
-        public ArticleRepo(IConfiguration config)
+        public ArticleRepo(IConfiguration config) : base(config)
         {
-            _config = config;
-            TableServiceClient serviceClient = new TableServiceClient(Environment.GetEnvironmentVariable("AZURE_CONNECTION") ?? _config["AzureWebStorage"]);
+            TableServiceClient serviceClient = new TableServiceClient(connectionString);
             serviceClient.CreateTableIfNotExists("articles");
             _tableClient = serviceClient.GetTableClient("articles");
         }

@@ -4,15 +4,13 @@ using ContentAPI.DAL.Interfaces;
 
 namespace ContentAPI.DAL
 {
-    public class LocationRepo<T> : ILocationRepo<T> where T : class, ITableEntity, new()
+    public class LocationRepo<T> : BaseRepo, ILocationRepo<T> where T : class, ITableEntity, new()
     {
         private readonly TableClient _tableClient;
-        private readonly IConfiguration _config;
 
-        public LocationRepo(IConfiguration config)
+        public LocationRepo(IConfiguration config) : base(config)
         {
-            _config = config;
-            TableServiceClient serviceClient = new TableServiceClient(Environment.GetEnvironmentVariable("AZURE_CONNECTION") ?? _config["AzureWebStorage"]);
+            TableServiceClient serviceClient = new TableServiceClient(connectionString);
             serviceClient.CreateTableIfNotExists("locations");
             _tableClient = serviceClient.GetTableClient("locations");
         }

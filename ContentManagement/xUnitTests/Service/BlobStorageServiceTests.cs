@@ -66,8 +66,8 @@ namespace ContentAPI.Tests
 
             var oldImageURLs = JsonSerializer.Serialize(new Dictionary<string, string>
             {
-                { "image1.jpg", "https://mock.blob.url/image1.jpg" },
-                { "image2.jpg", "https://mock.blob.url/image2.jpg" }
+                { "image1.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image1.jpg" },
+                { "image2.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image2.jpg" }
             });
 
             var newBase64Images = new Dictionary<string, string>

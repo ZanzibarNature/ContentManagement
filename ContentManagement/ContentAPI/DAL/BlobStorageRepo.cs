@@ -4,15 +4,13 @@ using ContentAPI.DAL.Interfaces;
 
 namespace ContentAPI.DAL
 {
-    public class BlobStorageRepo : IBlobStorageRepo
+    public class BlobStorageRepo : BaseRepo, IBlobStorageRepo
     {
         private readonly BlobContainerClient _blobContainerClient;
-        private readonly IConfiguration _config;
 
-        public BlobStorageRepo(IConfiguration config)
+        public BlobStorageRepo(IConfiguration config) : base(config)
         {
-            _config = config;
-            string? connectionString = Environment.GetEnvironmentVariable("AZURE_CONNECTION") ?? _config["AzureWebStorage"];
+            string? connectionString = base.connectionString;
             string containerName = "image-container";
 
             _blobContainerClient = new BlobContainerClient(connectionString, containerName);
