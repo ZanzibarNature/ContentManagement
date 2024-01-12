@@ -7,12 +7,13 @@ namespace ContentAPI.DAL
     public class LocationRepo<T> : BaseRepo, ILocationRepo<T> where T : class, ITableEntity, new()
     {
         private readonly TableClient _tableClient;
+        private readonly string _tableName = "locations";
 
         public LocationRepo(IConfiguration config) : base(config)
         {
             TableServiceClient serviceClient = new TableServiceClient(connectionString);
-            serviceClient.CreateTableIfNotExists("locations");
-            _tableClient = serviceClient.GetTableClient("locations");
+            serviceClient.CreateTableIfNotExists(_tableName);
+            _tableClient = serviceClient.GetTableClient(_tableName);
         }
 
         public async Task<Response> DeleteAsync(string partitionKey, string rowKey)

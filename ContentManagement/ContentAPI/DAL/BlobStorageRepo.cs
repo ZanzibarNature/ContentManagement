@@ -10,12 +10,9 @@ namespace ContentAPI.DAL
 
         public BlobStorageRepo(IConfiguration config) : base(config)
         {
-            string? connectionString = base.connectionString;
-            string containerName = "image-container";
-
-            _blobContainerClient = new BlobContainerClient(connectionString, containerName);
+            _blobContainerClient = new BlobContainerClient(connectionString, "image-container");
+            //_blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
             _blobContainerClient.CreateIfNotExists();
-            _blobContainerClient.SetAccessPolicy(PublicAccessType.Blob);
         }
 
         public string StoreJpgImage(string prefix, string image, string folderName = "")

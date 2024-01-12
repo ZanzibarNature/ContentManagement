@@ -7,12 +7,13 @@ namespace ContentAPI.DAL
     public class ArticleRepo<T> : BaseRepo, IArticleRepo<T> where T : class, ITableEntity, new()
     {
         private readonly TableClient _tableClient;
+        private readonly string _tableName = "articles";
 
         public ArticleRepo(IConfiguration config) : base(config)
         {
             TableServiceClient serviceClient = new TableServiceClient(connectionString);
-            serviceClient.CreateTableIfNotExists("articles");
-            _tableClient = serviceClient.GetTableClient("articles");
+            serviceClient.CreateTableIfNotExists(_tableName);
+            _tableClient = serviceClient.GetTableClient(_tableName);
         }
         public async Task<Response> DeleteAsync(string partitionKey, string rowKey)
         {
