@@ -20,6 +20,14 @@ namespace ContentAPI.Controllers
             _blobService = blobService;
         }
 
+        [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
+        public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
+        {
+            Article art = await _articleService.GetByKeyAsync(partitionKey, rowKey);
+
+            return art == null ? NotFound() : Ok(art);
+        }
+
         [CustomAuth]
         [HttpPost("Create")]
         public async Task<IActionResult> Create([FromBody] CreateArticleDTO DTO)
@@ -38,22 +46,22 @@ namespace ContentAPI.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateArticleDTO DTO)
         {
-            if (DTO == null)
+            try
             {
-                return BadRequest("The given DTO is null or invalid");
+                if (DTO == null)
+                {
+                    return BadRequest("The given DTO is null or invalid");
+                }
+
+                Article updatedArt = await _articleService.UpdateAsync(DTO);
+
+                return Ok(updatedArt);
             }
-
-            Article updatedArt = await _articleService.UpdateAsync(DTO);
-
-            return Ok(updatedArt);
-        }
-
-        [HttpGet("GetByKey/{partitionKey}/{rowKey}")]
-        public async Task<IActionResult> GetByKey(string partitionKey, string rowKey)
-        {
-            Article art = await _articleService.GetByKeyAsync(partitionKey, rowKey);
-
-            return art == null ? NotFound() : Ok(art);
+            catch (RequestFailedException ex)
+            {
+                return StatusCode(ex.Status, ex.Message);
+            }
+           
         }
 
         [CustomAuth]
@@ -62,7 +70,7 @@ namespace ContentAPI.Controllers
         {
             Response response = await _articleService.DeleteAsync(partitionKey, rowKey);
 
-            return response.IsError ? NotFound("Given keypair does not exist") : NoContent();
+            return response.IsError ? NotFound("Given keypair does not exist") : Ok("Article succesfully deleted");
         }
     }
 }

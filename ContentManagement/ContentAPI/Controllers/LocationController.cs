@@ -3,6 +3,7 @@ using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Middleware;
+using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,14 +47,21 @@ namespace ContentAPI.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> Update([FromBody] UpdateLocationDTO DTO)
         {
-            if (DTO == null)
+            try
             {
-                return BadRequest("The given DTO is null or invalid");
+                if (DTO == null)
+                {
+                    return BadRequest("The given DTO is null or invalid");
+                }
+
+                Location updatedLoc = await _locationService.UpdateAsync(DTO);
+
+                return Ok(updatedLoc);
             }
-
-            Location updatedLocation = await _locationService.UpdateAsync(DTO);
-
-            return Ok(updatedLocation);
+            catch (RequestFailedException ex)
+            {
+                return StatusCode(ex.Status, ex.Message);
+            }
         }
 
         [CustomAuth]
@@ -62,7 +70,7 @@ namespace ContentAPI.Controllers
         {
             Response response = await _locationService.DeleteAsync(partitionKey, rowKey);
 
-            return response.IsError ? NotFound("Given keypair does not exist") : NoContent();
+            return response.IsError ? NotFound("Given keypair does not exist") : Ok("Location succesfully deleted");
         }
     }
 }

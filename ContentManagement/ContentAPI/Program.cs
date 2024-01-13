@@ -4,6 +4,7 @@ using ContentAPI.Domain;
 using ContentAPI.Middleware;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
+using Prometheus;
 using System.Net;
 using System.Text.Json.Serialization;
 
@@ -46,6 +47,13 @@ namespace ContentAPI
             var app = builder.Build();
 
             // Middleware pipeline
+
+            app.UseMetricServer();
+
+            app.UseHttpMetrics(options =>
+            {
+                options.AddCustomLabel("host", context => context.Request.Host.Host);
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI();
