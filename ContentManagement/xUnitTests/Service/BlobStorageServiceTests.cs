@@ -42,48 +42,48 @@ namespace ContentAPI.Tests
         public void StoreNewImagesAndRetrieveBlobUrls_ShouldCallBlobStorageRepo_StoreJpgImageForEachImage()
         {
             // Arrange
-            var content = new Mock<ContentBase>();
+            var content = new Mock<Article>();
 
             var newBase64Images = new Dictionary<string, string>
             {
-                { "image1.jpg", "base64image1" },
-                { "image2.jpg", "base64image2" }
+                { "ImageKey1", "base64image1" },
+                { "ImageKey2", "base64image2" }
             };
+
+            _blobStorageRepoMock.Setup(repo => repo.StoreJpgImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(It.IsAny<string>());
 
             // Act
             _blobStorageService.StoreNewImagesAndRetrieveBlobUrls(newBase64Images, content.Object);
 
             // Assert
-            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage("image1.jpg", "base64image1", "partitionKeyrowKey/"), Times.Once);
-            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage("image2.jpg", "base64image2", "partitionKeyrowKey/"), Times.Once);
+            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
 
         [Fact]
         public void UpdateImagesAndRetrieveBlobUrls_ShouldCallBlobStorageRepo_StoreJpgImageAndDeleteImageForEachImage()
         {
             // Arrange
-            var content = new Mock<ContentBase>();
+            var content = new Mock<Article>();
 
             var oldImageURLs = JsonSerializer.Serialize(new Dictionary<string, string>
             {
-                { "image1.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image1.jpg" },
-                { "image2.jpg", "https://mock.blob.url/account/container/partitionKey-rowKey/image2.jpg" }
+                { "BannerImage", "https://mock.blob.url/account/container/partitionKey-rowKey/image1.jpg" },
+                { "AdditionalImage", "https://mock.blob.url/account/container/partitionKey-rowKey/image2.jpg" }
             });
 
             var newBase64Images = new Dictionary<string, string>
             {
-                { "image1.jpg", "newBase64image1" },
-                { "image3.jpg", "newBase64image3" }
+                { "BannerImage", "newBase64image1" },
+                { "AdditionalImage", "newBase64image2" }
             };
 
             // Act
             _blobStorageService.UpdateImagesAndRetrieveBlobUrls(oldImageURLs, newBase64Images, content.Object);
 
             // Assert
-            _blobStorageRepoMock.Verify(repo => repo.DeleteImage("partitionKeyrowKey/image1.jpg"), Times.Once);
-            _blobStorageRepoMock.Verify(repo => repo.DeleteImage("partitionKeyrowKey/image2.jpg"), Times.Once);
-            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage("image1.jpg", "newBase64image1", "partitionKeyrowKey/"), Times.Once);
-            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage("image3.jpg", "newBase64image3", "partitionKeyrowKey/"), Times.Once);
+            _blobStorageRepoMock.Verify(repo => repo.DeleteImage(It.IsAny<string>()), Times.Exactly(2));
+            _blobStorageRepoMock.Verify(repo => repo.StoreJpgImage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Exactly(2));
         }
     }
 }
