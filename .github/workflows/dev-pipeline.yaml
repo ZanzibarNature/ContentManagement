@@ -69,6 +69,26 @@ jobs:
           insecure_skip_tls_verify: true
           namespace: kawa-foundation-app-dev
       
+      - name: Get login token from OpenShift
+        id: get_token
+        run: |
+          NEW_TOKEN=$(oc whoami --show-token)
+          echo "::set-output name=new_token::$NEW_TOKEN"
+
+      - name: Refresh OPENSHIFT_TOKEN secret
+        run: |
+          echo "Removing existing OPENSHIFT_TOKEN secret"
+          curl -X DELETE \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/OPENSHIFT_TOKEN"
+
+          echo "Creating new OPENSHIFT_TOKEN secret"
+          curl -X PUT \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"encrypted_value": "'"$(echo -n "${{ steps.get_token.outputs.new_token }}" | base64)"'", "key_id": "'"$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/secrets/public-key" | jq -r .key_id)"'"}' \
+            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/OPENSHIFT_TOKEN"
+      
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
