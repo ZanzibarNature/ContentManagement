@@ -68,26 +68,33 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           insecure_skip_tls_verify: true
           namespace: kawa-foundation-app-dev
+
+      - name: Get OpenShift token
+        run: |
+          token=$(oc whoami --show-token)
+          echo "::set-env name=NEW_TOKEN::$token"
       
-      - name: Get login token from OpenShift
-        id: get_token
+      - name: Get public key from GitHub secrets
         run: |
-          NEW_TOKEN=$(oc whoami --show-token)
-          echo "::set-output name=new_token::$NEW_TOKEN"
+          response=$(curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/orgs/ORG/actions/secrets/public-key)
+          key_id=$(echo "$response" | jq -r '.key_id')
+          echo "::set-env name=SECRET_KEY_ID::$key_id"
 
-      - name: Refresh OPENSHIFT_TOKEN secret
+      - name: Update GitHub secret with new OPENSHIFT_TOKEN
         run: |
-          echo "Removing existing OPENSHIFT_TOKEN secret"
-          curl -X DELETE \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/OPENSHIFT_TOKEN"
+          echo "Updating OPENSHIFT_TOKEN secret"
+          curl -L \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/orgs/ORG/actions/secrets/OPENSHIFT_TOKEN \
+            -d '{"encrypted_value":"'"$(echo -n "${{ env.NEW_TOKEN }}" | base64)"'", "key_id":"'"${{ env.SECRET_KEY_ID }}"'", "visibility":"all"'
 
-          echo "Creating new OPENSHIFT_TOKEN secret"
-          curl -X PUT \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d '{"encrypted_value": "'"$(echo -n "${{ steps.get_token.outputs.new_token }}" | base64)"'", "key_id": "'"$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/actions/secrets/public-key" | jq -r .key_id)"'"}' \
-            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/OPENSHIFT_TOKEN"
       
       - name: Set up Helm
         uses: azure/setup-helm@v3
