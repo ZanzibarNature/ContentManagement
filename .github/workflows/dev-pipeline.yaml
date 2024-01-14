@@ -80,7 +80,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/orgs/ORG/actions/secrets/public-key)
+            https://api.github.com/orgs/ZanzibarNature/actions/secrets/public-key)
           key_id=$(echo "$response" | jq -r '.key_id')
           echo "::set-env name=SECRET_KEY_ID::$key_id"
 
@@ -92,10 +92,9 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/orgs/ORG/actions/secrets/OPENSHIFT_TOKEN \
+            https://api.github.com/orgs/ZanzibarNature/actions/secrets/OPENSHIFT_TOKEN \
             -d '{"encrypted_value":"'"$(echo -n "${{ env.NEW_TOKEN }}" | base64)"'", "key_id":"'"${{ env.SECRET_KEY_ID }}"'", "visibility":"all"'
 
-      
       - name: Set up Helm
         uses: azure/setup-helm@v3
         with:
