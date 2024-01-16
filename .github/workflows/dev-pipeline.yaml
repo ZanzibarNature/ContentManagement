@@ -93,7 +93,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/orgs/ZanzibarNature/actions/secrets/OPENSHIFT_TOKEN \
-            -d '{"encrypted_value":"'"$(echo -n "${{ steps.get_token_step.outputs.TOKEN }}" | base64)"'", "key_id":"'"${{ steps.get_key_step.outputs.KEY_ID }}"'", "visibility":"all"'
+            -d '{"encrypted_value":"'"$(echo -n "${{ steps.get_token_step.outputs.TOKEN }}" | base64)"'", "key_id":"'"${{ steps.get_key_step.outputs.KEY_ID }}"'", "visibility":"all"}'
 
       - name: Set up Helm
         uses: azure/setup-helm@v3
