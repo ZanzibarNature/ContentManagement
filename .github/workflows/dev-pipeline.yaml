@@ -71,7 +71,7 @@ jobs:
 
       - name: Get OpenShift token
         run: |
-          echo TOKEN=$(oc whoami --show-token) >> $GITHUB_OUTPUT
+          echo TOKEN=$(curl -X GET https://oauth-openshift.apps.ocp6-inholland.joran-bergfeld.com/oauth/token/request) >> $GITHUB_OUTPUT
         id: get_token_step
       
       - name: Get public key from GitHub secrets
