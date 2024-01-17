@@ -1,4 +1,4 @@
-name: cm-dev-pipeline
+name: cm-main-pipeline
 
 on:
   push:
@@ -75,4 +75,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
  
       - name: Deploy with Helm
-        run: helm upgrade --install content-management docker-compose/
+        run: helm upgrade --install content-management-prod docker-compose/
