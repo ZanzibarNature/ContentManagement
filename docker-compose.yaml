@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  contentmanagement:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: zanzibarinh/contentmanagement:latest
+    container_name: ContentManagement
