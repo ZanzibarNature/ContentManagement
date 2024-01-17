@@ -53,7 +53,7 @@ namespace ContentAPI.Service
                 GoogleMapsURL = DTO.GoogleMapsURL,
             };
 
-            Dictionary<string, string> imageURLs = JsonSerializer.Deserialize<Dictionary<string, string>>(DTO.OldSerializedImageURLs);
+            Dictionary<string, string>? imageURLs = JsonSerializer.Deserialize<Dictionary<string, string>>(DTO.OldSerializedImageURLs);
 
             // Update images in Blob
             foreach (var image in DTO.Base64Images)
@@ -79,6 +79,10 @@ namespace ContentAPI.Service
         public async Task<Response> DeleteAsync(string partitionKey, string rowKey)
         {
             return await _locationRepo.DeleteAsync(partitionKey, rowKey);
+        }
+        public async Task<Tuple<string, IEnumerable<Location>>?> GetPage(string? continuationToken, int? maxPerPage)
+        {
+            return await _locationRepo.GetPage(continuationToken, maxPerPage);
         }
     }
 }

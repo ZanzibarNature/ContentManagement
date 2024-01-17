@@ -9,6 +9,7 @@ namespace ContentAPI.Service.Interfaces
         public Task<Location> Create(CreateLocationDTO DTO);
         public Task<Location> UpdateAsync(UpdateLocationDTO DTO);
         public Task<Location> GetByKeyAsync(string partitionKey, string rowKey);
+        public Task<Tuple<string, IEnumerable<Location>>?> GetPage(string? continuationToken, int? maxPerPage);
         public Task<Response> DeleteAsync(string partitionKey, string rowKey);
     }
 }

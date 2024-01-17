@@ -3,6 +3,7 @@ using ContentAPI.Controllers.Interfaces;
 using ContentAPI.Domain;
 using ContentAPI.Domain.DTO;
 using ContentAPI.Middleware;
+using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,6 +72,14 @@ namespace ContentAPI.Controllers
             Response response = await _articleService.DeleteAsync(partitionKey, rowKey);
 
             return response.IsError ? NotFound("Given keypair does not exist") : Ok("Article succesfully deleted");
+        }
+
+        [HttpGet("GetPage")]
+        public async Task<IActionResult> GetPage(string? continuationToken, int? maxPerPage)
+        {
+            Tuple<string, IEnumerable<Article>>? arts = await _articleService.GetPage(continuationToken, maxPerPage);
+
+            return arts == null ? NotFound("No locations found") : Ok(arts);
         }
     }
 }

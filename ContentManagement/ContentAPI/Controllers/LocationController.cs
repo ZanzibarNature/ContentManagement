@@ -6,6 +6,7 @@ using ContentAPI.Middleware;
 using ContentAPI.Service;
 using ContentAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Concurrent;
 
 namespace ContentAPI.Controllers
 {
@@ -71,6 +72,14 @@ namespace ContentAPI.Controllers
             Response response = await _locationService.DeleteAsync(partitionKey, rowKey);
 
             return response.IsError ? NotFound("Given keypair does not exist") : Ok("Location succesfully deleted");
+        }
+
+        [HttpGet("GetPage")]
+        public async Task<IActionResult> GetPage(string? continuationToken = null, int? maxPerPage = 10)
+        {
+            Tuple<string, IEnumerable<Location>>? locations = await _locationService.GetPage(continuationToken, maxPerPage);
+
+            return locations == null ? NotFound("No locations found") : Ok(locations);
         }
     }
 }

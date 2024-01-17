@@ -44,6 +44,11 @@ namespace ContentAPI.Service
             return await _articleRepo.GetByKeyAsync(partitionKey, rowKey);
         }
 
+        public async Task<Tuple<string, IEnumerable<Article>>?> GetPage(string? continuationToken, int? maxPerPage)
+        {
+            return await _articleRepo.GetPage(continuationToken, maxPerPage);
+        }
+
         public async Task<Article> UpdateAsync(UpdateArticleDTO DTO)
         {
             Article updatedArt = new Article

@@ -9,6 +9,7 @@ namespace ContentAPI.Service.Interfaces
         public Task<Article> Create(CreateArticleDTO DTO);
         public Task<Article> UpdateAsync(UpdateArticleDTO DTO);
         public Task<Article> GetByKeyAsync(string partitionKey, string rowKey);
+        public Task<Tuple<string, IEnumerable<Article>>?> GetPage(string? continuationToken, int? maxPerPage);
         public Task<Response> DeleteAsync(string partitionKey, string rowKey);
     }
 }
