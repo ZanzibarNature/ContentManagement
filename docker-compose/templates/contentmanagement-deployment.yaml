@@ -8,7 +8,7 @@ metadata:
   labels:
     io.kompose.service: contentmanagement
   name: contentmanagement
-  namespace: kawa-foundation-app
+  namespace: kawa-foundation-app-dev
 spec:
   replicas: 1
   selector:
