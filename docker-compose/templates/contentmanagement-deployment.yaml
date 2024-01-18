@@ -22,8 +22,8 @@ spec:
         kompose.version: 1.30.0 (9d8dcb518)
       creationTimestamp: null
       labels:
-        io.kompose.network/contentmanagement-prod-default: "true"
-        io.kompose.service: contentmanagement-prod
+        io.kompose.network/contentmanagement-default: "true"
+        io.kompose.service: contentmanagement
     spec:
       containers:
         - env:
@@ -33,7 +33,7 @@ spec:
                   name: content-config
                   key: AZURE_CONNECTION
           image: zanzibarinh/contentmanagement:{{.Values.version}}
-          name: contentmanagement-prod
+          name: contentmanagement
           resources: {}
       restartPolicy: Always
 status: {}
