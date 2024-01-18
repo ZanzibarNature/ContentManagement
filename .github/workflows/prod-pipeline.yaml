@@ -45,6 +45,29 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: Read current version
+        id: read-version
+        run: echo "::set-output name=version::$(cat version.txt)"
+      - 
+        name: Increment patch version
+        id: increment-patch-version
+        run: echo "::set-output name=version::$(echo ${{ steps.read-version.outputs.version }} | awk -F. '{$3=$3+1; print $0}' OFS=.)"
+      - 
+        name: Write new version
+        run: echo "${{ steps.increment-patch-version.outputs.version }}" > version.txt
+      - 
+        name: Set variable
+        id: set_var
+        run: echo "version=${{ steps.increment-patch-version.outputs.version }}" >> $GITHUB_ENV
+      - 
+        name: Commit and push new version
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add version.txt
+          git commit -m "Increment patch version to ${{ steps.increment-patch-version.outputs.version }} [skip ci]"
+          git push
       -
         name: Build and push
         uses: docker/build-push-action@v5
@@ -75,4 +98,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
  
       - name: Deploy with Helm
-        run: helm upgrade --install content-management-prod docker-compose/
+        run: helm upgrade --install content-management-prod --set version=${{needs.docker.outputs.version}} docker-compose/

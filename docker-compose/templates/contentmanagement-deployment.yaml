@@ -32,7 +32,7 @@ spec:
                 configMapKeyRef:
                   name: content-config
                   key: AZURE_CONNECTION
-          image: zanzibarinh/contentmanagement:latest
+          image: zanzibarinh/contentmanagement:{{.Values.version}}
           name: contentmanagement-prod
           resources: {}
       restartPolicy: Always

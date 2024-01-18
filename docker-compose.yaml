@@ -5,5 +5,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: zanzibarinh/contentmanagement:latest
+    image: zanzibarinh/contentmanagement:{{.Values.version}}
     container_name: ContentManagement
