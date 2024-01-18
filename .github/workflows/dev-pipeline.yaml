@@ -3,7 +3,7 @@ name: cm-dev-pipeline
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   build:
