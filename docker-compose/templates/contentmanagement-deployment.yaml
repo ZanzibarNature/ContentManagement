@@ -36,6 +36,7 @@ spec:
           name: contentmanagement
           resources: {}
       restartPolicy: Always
+---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
